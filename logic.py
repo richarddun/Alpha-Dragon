@@ -13,13 +13,21 @@ def main(win):
     curses.curs_set(0)
     y,x=0,1
     maxcoords = stdscr.getmaxyx()
-    win1 = Drawwin(maxcoords[y]/2,maxcoords[x],0,0)
-    win2 = Drawwin(maxcoords[y]/2,maxcoords[x],maxcoords[y]/2,0)
-    win1.draw_border()
-    win2.draw_border()
+    stdscr.refresh()
+    Ewin = Enemy_win(maxcoords[y],maxcoords[x])
+    Pwin = Player_win(maxcoords[y],maxcoords[x]) 
+    Swin = Status_win(maxcoords[y],maxcoords[x])
+    
+    
+    
     p = stdscr.getch()
+
+
+
     #end of program clean up
-    curses.nocbreak(); stdscr.keypad(0); curses.echo()
+    curses.nocbreak()
+    stdscr.keypad(0)
+    curses.echo()
     curses.endwin()
 
 if __name__=='__main__':
