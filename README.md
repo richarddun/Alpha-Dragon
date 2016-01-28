@@ -6,5 +6,5 @@ Plans to include :
 - Collectible loot
 - Levelling / XP
 - More RNG!
-
+- Eventually implement unicurses, right now Windows is not supported
 
