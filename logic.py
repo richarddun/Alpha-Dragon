@@ -17,10 +17,19 @@ def main(win):
     Ewin = Enemy_win(maxcoords[y],maxcoords[x])
     Pwin = Player_win(maxcoords[y],maxcoords[x]) 
     Swin = Status_win(maxcoords[y],maxcoords[x])
-    
-    
-    
-    p = stdscr.getch()
+    game_is_running = True
+    while game_is_running:
+        keypress = stdscr.getch()
+        if keypress == ord('Q'):
+            game_is_running = False
+            break
+        elif keypress == curses.KEY_RIGHT:
+            Swin.actselect(1, False)
+        elif keypress == curses.KEY_LEFT:
+            Swin.actselect(-1, False)
+        elif keypress == curses.KEY_ENTER:
+            Swin.actselect(0, True)
+
 
 
 
