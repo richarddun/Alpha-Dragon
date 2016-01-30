@@ -17,6 +17,7 @@ def main(win):
     Ewin = Enemy_win(maxcoords[y],maxcoords[x])
     Pwin = Player_win(maxcoords[y],maxcoords[x]) 
     Swin = Status_win(maxcoords[y],maxcoords[x])
+    Pwin.update_p_status()
     game_is_running = True
     while game_is_running:
         keypress = stdscr.getch()

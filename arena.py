@@ -8,25 +8,41 @@ class Enemy_win(object):
     """Initialise a new enemy window with predetermined
         positions"""
     def __init__(self,h,w):
-        starty, startx = 0,0 #enemy window on top
-        len_y = int(round((h/5) * 2))
-        len_x = w
-        win = curses.newwin(len_y,len_x,starty,startx)
-        win.border('|','|','-','-','+','+','+','+')
+        self.starty, self.startx = 0,0 #enemy window on top
+        self.len_y = int(round((h/5) * 2))
+        self.len_x = w
+        self.win = curses.newwin(self.len_y,self.len_x,self.starty,self.startx)
+        self.win.border('|','|','-','-','+','+','+','+')
         #win.addstr(1,1,str(win.getmaxyx))
-        win.refresh()
+        self.win.refresh()
 
 class Player_win(object):
     """Initialise a new player window with predetermined
         positions"""
     def __init__(self,h,w):
-        starty, startx = int(round((h/5) * 2)), 0
-        len_y = int(round((h/5) * 2))
-        len_x = w
-        win = curses.newwin(len_y,len_x,starty,startx)
-        win.border('|','|','-','-','+','+','+','+')
+        self.starty, self.startx = int(round((h/5) * 2)), 0
+        self.len_y = int(round((h/5) * 2))
+        self.len_x = w
+        self.win = curses.newwin(self.len_y,self.len_x,self.starty,self.startx)
+        self.win.border('|','|','-','-','+','+','+','+')
         #win.addstr(1,1,str(win.getmaxyx))
-        win.refresh()
+        self.subsect = 3 #number of subsections in window
+        self.win.refresh()
+
+    def update_p_status(self, kind = 0, value = 0):
+        self.to_update = kind
+        self.valupdate = value
+        self.subsectlen = self.len_x / self.subsect
+        self.xtextwrite = self.subsectlen - 19#possible length of kinds to write
+        self.kindlist = ['HP:','Armor:','Stamina:','Atk Dmg:','Evade:','Healing Potions:']
+        if self.to_update == 0: #if just writing first instance
+            for index,item in enumerate(self.kindlist,1):
+                self.win.addstr(index,1,item)
+                self.win.refresh()
+        if self.to_update > 0:
+            self.win.addstr(self.to_update,1,'                      ')
+            self.win.addstr(self.to_update,1,self.kindlist[self.to_update]+str(self.valupdate))
+
 
 class Status_win(object):
     """Initialise a new status window with predetermined
