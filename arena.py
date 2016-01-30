@@ -55,6 +55,7 @@ class Status_win(object):
                 self.win.addstr(self.len_y/2,xstrloc,value)
         
         self.win.addch(self.posref[0][0],self.posref[0][1], ord('^'))
+        self.win.addstr(self.len_y-2, self.len_x -75, 'Standard Attack with your main weapon. Higher chance of hit with less dmg.')
         self.win.refresh()
     
     def actselect(self,way=0,confirm=False):
