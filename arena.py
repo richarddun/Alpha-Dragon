@@ -143,7 +143,7 @@ class Status_win(object):
         infoloc_y, infoloc_x = self.len_y-2, self.len_x - 75
         if not confirm:
             if self.newpos + way < 0:
-                self.newpos = 3
+                self.newpos = 4
             
             if self.newpos + way > 3:
                 self.newpos = 0
