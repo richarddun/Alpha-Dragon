@@ -51,21 +51,31 @@ def main(win):
             Swin.actselect(-1, False)
         elif keypress == curses.KEY_ENTER:
             took_action = True
+            player1.defending = False
             #Swin.actselect(0, True)
             if Swin.actions[Swin.curpos] == 'Attack':
                 pot_dmg = random.randint(5,20)
+                #TODO-create a better dmg generator
                 Pwin.a_feedback(new_enemy.is_attacked
                         (pot_dmg,False))
-                if new_enemy.dmgcount() > 0:
-                    Ewin.update_e_status(0,new_enemy.dmgcount())
+                if new_enemy.dmgcount > 0:
+                    Ewin.update_e_status(0,new_enemy.dmgcount)
             elif Swin.actions[Swin.curpos] == 'Defend':
-                pass
+                player1.defending = True
+                Pwin.d_feedback()
             elif Swin.actions[Swin.curpos] == 'Special':
-                pass
+                pot_dmg = random.randint(15,40)
+                Pwin.s_feedback(new_enemy.is_attacked
+                        (pot_dmg,True)
             elif Swin.actions[Swin.curpos] == 'Heal':
-                pass
-        if took_action == True:
-            #enemy turn
+                if player1.potions > 0:
+                    healed = random.randint(30,50)
+                    Pwin.h_feedback(player1.heal(healed))
+
+                #pass
+        if took_action:
+            if new_enemy.is_hostile:
+                enemyattack = 
 
 
 

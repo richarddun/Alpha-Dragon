@@ -45,7 +45,7 @@ class Player_win(object):
         self.valupdate = value
         self.subsectlen = self.len_x / self.subsect
         self.xtextwrite = self.subsectlen - 19#possible length of kinds to write
-        self.kindlist = ['HP:','Armor:','Stamina:','Atk Dmg:','Evade:','Healing Potions:','Lvl:','Exp:']
+        self.kindlist = ['HP:','AP:','Armor:','Stamina:','Atk Dmg:','Evade:','Healing Potions:','Lvl:','Exp:']
         if self.to_update == 0: #if just writing first instance
             for index,item in enumerate(self.kindlist,1):
                 self.win.addstr(index,1,item)
@@ -53,7 +53,9 @@ class Player_win(object):
         if self.to_update > 0:
             self.win.addstr(self.to_update,1,'                      ')
             self.win.addstr(self.to_update,1,self.kindlist[self.to_update]+str(self.valupdate))
+    
     def a_feedback(self,dmg,result):
+        """Write output to player screen when attacking"""
         if result == 'miss':
             resultstring = 'You attack but miss your target'
         elif result == 'absorb':
@@ -63,6 +65,31 @@ class Player_win(object):
         self.win.addstr(self.len_y-2,self.len_x -31,'                               ')
 #TODO - write e_feedback, continue to flesh out battle flow and add 'enemy turn' to the logic
         self.win.addstr(self.len_y-2,self.len_x -len(resultstring),resultstring)
+
+    def d_feedback(self):
+        """Write output to player screen while defending"""
+        resultstring = 'You defend.  Armor, Evade increase.'
+        self.win.addstr(self.len_y-2,self.len_x -31,'                               ')
+        self.win.addstr(self.len_y-2,self.len_x - len(resultstring)
+                ,resulstring)
+
+    def s_feedback(self,dmg,result):
+        """Write output to player screen when attacking"""
+        if result == 'miss':
+            resultstring = 'Your special attack misses!'
+        elif result == 'hit':
+            resultstring = 'Your gore the enemy for ' +str(dmg)+ ' damage'
+        self.win.addstr(self.len_y-2,self.len_x -31,'                               ')
+        self.win.addstr(self.len_y-2,self.len_x -len(resultstring)
+                ,resultstring)
+    
+    def h_feedback(self,amount):
+        """Write output to player screen when healed"""
+        resultstring = 'Used a potion.  Healed by  '+str(amount)
+        self.win.addstr(self.len_y-2,self.len_x -31,'                               ')
+        self.win.addstr(self.len_y-2,self.len_x -len(resultstring)
+                ,resultstring)
+
 
 class Status_win(object):
     """Initialise a new status window with predetermined

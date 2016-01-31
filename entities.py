@@ -28,10 +28,13 @@ class Enemy(object):
                 return(full_dmg, 'hit')
                 #counts as a hit
         if special == True:
-            self.hp -= dmg
-            self.dmgcount = dmg
-            return(dmg, 'hits')
-            #hit, ignore armor
+            if dmg == 16:
+                return(0, 'miss')
+            else :
+                self.hp -= dmg
+                self.dmgcount = dmg
+                return(dmg, 'hits')
+                #hit, ignore armor
 
     def heal(self, amount):
         self.hp += amount
@@ -116,6 +119,7 @@ class Player(object):
             self.defending = False
     def heal(self, amount):
         self.hp += amount
+        return amount
 
 
 game_is_running = True
