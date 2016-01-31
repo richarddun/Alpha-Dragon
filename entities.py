@@ -20,25 +20,25 @@ class Enemy(object):
             full_dmg = dmg - (self.armor/2)
             if full_dmg <= 0:
                 self.dmgcount = 0
-                return(0, 'absorb')
+                return (1, 'absorb')
                 #counts as an armor absorption
             else :
                 self.hp -= full_dmg
                 self.dmgcount = full_dmg
-                return(full_dmg, 'hit')
+                return (full_dmg, 'hit') 
                 #counts as a hit
         if special == True:
             if dmg == 16:
-                return(0, 'miss')
+                return (0, 'miss')
             else :
                 self.hp -= dmg
                 self.dmgcount = dmg
-                return(dmg, 'hits')
+                return (dmg, 'hits') 
                 #hit, ignore armor
 
     def heal(self, amount):
         self.hp += amount
-        return(amount, 'heal')
+        return (amount, 'heal') 
 
 class Peon(Enemy):
     """Peon enemy class"""
@@ -98,20 +98,24 @@ class Player(object):
             self.armor += self.armor
         if dmg <= 0:
             #counts as a miss or absorption
-            return
+            return (0, 'miss')
         if special == False:
             full_dmg = dmg - ((self.evasion + self.armor)/2)
             if full_dmg <= 0:
+                return (0,'absorb')
                 #counts as a full absorption
             else :
                 self.hp -= full_dmg
+                return (full_dmg, 'hit') 
                 #successful hit
         if special == True:
             full_dmg = dmg - self.evasion
             if full_dmg <= 0:
+                return (0,'evade')
             #counts as an evasion
             else:
                 self.hp -= full_dmg
+                return (full_dmg, 'hits')
                 #didn't evade, full hit no armor count
         if self.defending:
             self.evasion -= self.evasion
@@ -121,21 +125,3 @@ class Player(object):
         self.hp += amount
         return amount
 
-
-game_is_running = True
-enemies = {'Peon':Peon,'Ogre':Ogre,'Troll':Troll,'Dragon':Dragon}
-
-    
-while game_is_running:
-    if gamecount % 10 != 0:
-        current_enemy = doomselector()
-        if current_enemy == 1:
-            new_enemy = enemies['Peon']()
-        if current_enemy == 2:
-            new_enemy = enemies['Ogre']()
-        if current_enemy == 3:
-            new_enemy = enemies['Troll']()
-    if gamecount % 10 == 0:
-        new_enemy = enemies['Dragon']()
-
- 

@@ -26,6 +26,19 @@ class Enemy_win(object):
         if self.to_update > 0:
             self.win.addstr(self.to_update,1,'                      ')
             self.win.addstr(self.to_update,1,self.kindlist[self.to_update]+str(self.valupdate))
+    def ea_feedback(self,result):
+        """Write output to player screen when attacking"""
+        if result[1] == 'miss':
+            resultstring = 'Enemy attack missed'
+        elif result[1] == 'absorb':
+            resultstring = 'Your armor absorbs the enemy attack'
+        elif result[1] == 'hit':
+            resultstring = 'Enemy hits you for ' + str(result[0]) + ' damage'
+        elif result[1] == 'evade':
+            resultstring = 'Enemy strikes but you dodge the blow'
+        self.win.addstr(self.len_y-2,self.len_x -41,' '*40)
+        self.win.addstr(self.len_y-2,self.len_x -(len(resultstring)+1),resultstring)
+        self.win.refresh()
 
 class Player_win(object):
     """Initialise a new player window with predetermined
@@ -54,41 +67,43 @@ class Player_win(object):
             self.win.addstr(self.to_update,1,'                      ')
             self.win.addstr(self.to_update,1,self.kindlist[self.to_update]+str(self.valupdate))
     
-    def a_feedback(self,dmg,result):
+    def a_feedback(self,result):
         """Write output to player screen when attacking"""
-        if result == 'miss':
+        if result[1] == 'miss':
             resultstring = 'You attack but miss your target'
-        elif result == 'absorb':
+        elif result[1] == 'absorb':
             resultstring = 'Your attack barely dents its armor'
-        elif result == 'hit':
-            resultstring = 'Your attack hits for ' + str(dmg) + ' damage'
-        self.win.addstr(self.len_y-2,self.len_x -31,'                               ')
-#TODO - write e_feedback, continue to flesh out battle flow and add 'enemy turn' to the logic
-        self.win.addstr(self.len_y-2,self.len_x -len(resultstring),resultstring)
+        elif result[1] == 'hit':
+            resultstring = 'Your attack hits for ' + str(result[0]) + ' damage'
+        self.win.addstr(self.len_y-2,self.len_x -41,' '*40)
+        self.win.addstr(self.len_y-2,self.len_x -(len(resultstring)+1),resultstring)
+        self.win.refresh()
 
     def d_feedback(self):
         """Write output to player screen while defending"""
         resultstring = 'You defend.  Armor, Evade increase.'
-        self.win.addstr(self.len_y-2,self.len_x -31,'                               ')
-        self.win.addstr(self.len_y-2,self.len_x - len(resultstring)
-                ,resulstring)
-
-    def s_feedback(self,dmg,result):
-        """Write output to player screen when attacking"""
-        if result == 'miss':
-            resultstring = 'Your special attack misses!'
-        elif result == 'hit':
-            resultstring = 'Your gore the enemy for ' +str(dmg)+ ' damage'
-        self.win.addstr(self.len_y-2,self.len_x -31,'                               ')
-        self.win.addstr(self.len_y-2,self.len_x -len(resultstring)
+        self.win.addstr(self.len_y-2,self.len_x -41,' '*40)
+        self.win.addstr(self.len_y-2,self.len_x - (len(resultstring)+1)
                 ,resultstring)
+        self.win.refresh()
+
+    def s_feedback(self,result):
+        """Write output to player screen when attacking"""
+        if result[1] == 'miss':
+            resultstring = 'Your special attack misses!'
+        elif result[1] == 'hits':
+            resultstring = 'Your gore the enemy for ' +str(result[0])+ ' damage'
+        self.win.addstr(self.len_y-2,self.len_x -41,' '*40)
+        self.win.addstr(self.len_y-2,self.len_x -(len(resultstring)+1)
+                ,resultstring)
+        self.win.refresh()
     
     def h_feedback(self,amount):
         """Write output to player screen when healed"""
-        resultstring = 'Used a potion.  Healed by  '+str(amount)
-        self.win.addstr(self.len_y-2,self.len_x -31,'                               ')
-        self.win.addstr(self.len_y-2,self.len_x -len(resultstring)
-                ,resultstring)
+        resultstring = 'Used a potion.  Healed by '+str(amount)
+        self.win.addstr(self.len_y-2,self.len_x -41,' '*40)
+        self.win.addstr(self.len_y-2,self.len_x -(len(resultstring)+len(str(amount))-1) ,resultstring)
+        self.win.refresh()
 
 
 class Status_win(object):
@@ -128,7 +143,7 @@ class Status_win(object):
         infoloc_y, infoloc_x = self.len_y-2, self.len_x - 75
         if not confirm:
             if self.newpos + way < 0:
-                self.newpos = 4
+                self.newpos = 3
             
             if self.newpos + way > 3:
                 self.newpos = 0
@@ -155,14 +170,3 @@ class Status_win(object):
             self.win.addch(self.remy, self.remx, ord(' '))
             self.win.refresh()
         
-        #if confirm :
-         #   if self.actions[self.curpos] == 'Attack':
-          #      pass
-           # elif self.actions[self.curpos] == 'Defend':
-           #     pass
-           # elif self.actions[self.curpos] == 'Special':
-           #     pass
-           # elif self.actions[self.curpos] == 'Heal':
-           #     pass
-
-

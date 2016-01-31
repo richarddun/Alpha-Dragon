@@ -2,6 +2,7 @@
 """control flow, instance handling"""
 import curses
 import time
+import random
 from arena import *
 from entities import *
 
@@ -24,7 +25,7 @@ def main(win):
     stdscr.keypad(1)
     curses.curs_set(0)
     y,x=0,1
-    maxcoords = stdscr.getmaxyx()
+    maxcoords = (38,90) #stdscr.getmaxyx()
     stdscr.refresh()
     #instantiate the window layout
     Ewin = Enemy_win(maxcoords[y],maxcoords[x])
@@ -38,7 +39,7 @@ def main(win):
     gamecount = 1
     game_is_running = True
     #game flow
-    while game_is_running and player1.isalive():
+    while game_is_running and player1.isalive:
         took_action = False
         keypress = stdscr.getch()
         #player turn
@@ -53,29 +54,32 @@ def main(win):
             took_action = True
             player1.defending = False
             #Swin.actselect(0, True)
-            if Swin.actions[Swin.curpos] == 'Attack':
+            if Swin.actions[Swin.newpos] == 'Attack':
                 pot_dmg = random.randint(5,20)
                 #TODO-create a better dmg generator
                 Pwin.a_feedback(new_enemy.is_attacked
                         (pot_dmg,False))
                 if new_enemy.dmgcount > 0:
                     Ewin.update_e_status(0,new_enemy.dmgcount)
-            elif Swin.actions[Swin.curpos] == 'Defend':
-                player1.defending = True
-                Pwin.d_feedback()
-            elif Swin.actions[Swin.curpos] == 'Special':
+            elif Swin.actions[Swin.newpos] == 'Defend':
+               player1.defending = True
+               Pwin.d_feedback()
+            elif Swin.actions[Swin.newpos] == 'Special':
                 pot_dmg = random.randint(15,40)
                 Pwin.s_feedback(new_enemy.is_attacked
-                        (pot_dmg,True)
-            elif Swin.actions[Swin.curpos] == 'Heal':
+                        (pot_dmg,True))
+            elif Swin.actions[Swin.newpos] == 'Heal':
                 if player1.potions > 0:
                     healed = random.randint(30,50)
                     Pwin.h_feedback(player1.heal(healed))
-
                 #pass
         if took_action:
-            if new_enemy.is_hostile:
-                enemyattack = 
+            time.sleep(1)
+            enemyattack = random.randint(0,15)
+            Ewin.ea_feedback(player1.is_attacked(enemyattack,False))
+            time.sleep(.5)
+
+
 
 
 
