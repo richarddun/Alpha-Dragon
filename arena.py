@@ -1,6 +1,6 @@
 #!/usr/local/bin/python2.7
 
-"""Window handling classes - assume a 40/40/20 split (enemy/player/status)"""
+"""Window writing and handling classes - assume a 40/40/20 split (enemy/player/status)"""
 
 import curses
 
@@ -13,8 +13,19 @@ class Enemy_win(object):
         self.len_x = w
         self.win = curses.newwin(self.len_y,self.len_x,self.starty,self.startx)
         self.win.border('|','|','-','-','+','+','+','+')
-        #win.addstr(1,1,str(win.getmaxyx))
         self.win.refresh()
+
+    def update_e_status(self, kind = 0, value = 0):
+        self.to_update = kind
+        self.valupdate = value
+        self.kindlist = ['HP:','Armor:','Atk Dmg:','Evade:']
+        if self.to_update == 0: #if just writing first instance
+            for index,item in enumerate(self.kindlist,1):
+                self.win.addstr(index,self.len_x - 12,item)
+                self.win.refresh()
+        if self.to_update > 0:
+            self.win.addstr(self.to_update,1,'                      ')
+            self.win.addstr(self.to_update,1,self.kindlist[self.to_update]+str(self.valupdate))
 
 class Player_win(object):
     """Initialise a new player window with predetermined
@@ -34,7 +45,7 @@ class Player_win(object):
         self.valupdate = value
         self.subsectlen = self.len_x / self.subsect
         self.xtextwrite = self.subsectlen - 19#possible length of kinds to write
-        self.kindlist = ['HP:','Armor:','Stamina:','Atk Dmg:','Evade:','Healing Potions:']
+        self.kindlist = ['HP:','Armor:','Stamina:','Atk Dmg:','Evade:','Healing Potions:','Lvl:','Exp:']
         if self.to_update == 0: #if just writing first instance
             for index,item in enumerate(self.kindlist,1):
                 self.win.addstr(index,1,item)
@@ -42,7 +53,16 @@ class Player_win(object):
         if self.to_update > 0:
             self.win.addstr(self.to_update,1,'                      ')
             self.win.addstr(self.to_update,1,self.kindlist[self.to_update]+str(self.valupdate))
-
+    def a_feedback(self,dmg,result):
+        if result == 'miss':
+            resultstring = 'You attack but miss your target'
+        elif result == 'absorb':
+            resultstring = 'Your attack barely dents its armor'
+        elif result == 'hit':
+            resultstring = 'Your attack hits for ' + str(dmg) + ' damage'
+        self.win.addstr(self.len_y-2,self.len_x -31,'                               ')
+#TODO - write e_feedback, continue to flesh out battle flow and add 'enemy turn' to the logic
+        self.win.addstr(self.len_y-2,self.len_x -len(resultstring),resultstring)
 
 class Status_win(object):
     """Initialise a new status window with predetermined
@@ -88,8 +108,7 @@ class Status_win(object):
             
             else :
                 self.newpos += way
-            #set the y,x coords to list index containing each one of
-            #4 entries for possible selection locations
+            
             if self.newpos == 0:
                 self.win.addstr(infoloc_y,infoloc_x, '                                                                          ')
                 self.win.addstr(infoloc_y,infoloc_x, 'Standard Attack with your main weapon. Higher chance of hit with less dmg.')
@@ -109,17 +128,14 @@ class Status_win(object):
             self.win.addch(self.remy, self.remx, ord(' '))
             self.win.refresh()
         
-        if confirm :
-            if self.actions[self.curpos] == 'Attack':
-                pass
-            
-            elif self.actions[self.curpos] == 'Defend':
-                pass
-            
-            elif self.actions[self.curpos] == 'Special':
-                pass
-            
-            elif self.actions[self.curpos] == 'Heal':
-                pass
+        #if confirm :
+         #   if self.actions[self.curpos] == 'Attack':
+          #      pass
+           # elif self.actions[self.curpos] == 'Defend':
+           #     pass
+           # elif self.actions[self.curpos] == 'Special':
+           #     pass
+           # elif self.actions[self.curpos] == 'Heal':
+           #     pass
 
 

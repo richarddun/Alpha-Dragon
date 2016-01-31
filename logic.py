@@ -1,10 +1,22 @@
 #!/usr/local/bin/python2.7
-
+"""control flow, instance handling"""
 import curses
 import time
 from arena import *
+from entities import *
+
+def doomselector():
+    """Selects a random number identify next enemy"""
+    doomroll = random.randint(0,100)
+    if doomroll > 0 and doomroll < 40:
+        return 1
+    if doomroll > 40 and doomroll < 70:
+        return 2
+    if doomroll > 70:
+        return 3
 
 def main(win):
+    """Main control flow"""
     global stdscr
     stdscr = win
     curses.noecho()
@@ -14,13 +26,22 @@ def main(win):
     y,x=0,1
     maxcoords = stdscr.getmaxyx()
     stdscr.refresh()
+    #instantiate the window layout
     Ewin = Enemy_win(maxcoords[y],maxcoords[x])
     Pwin = Player_win(maxcoords[y],maxcoords[x]) 
     Swin = Status_win(maxcoords[y],maxcoords[x])
     Pwin.update_p_status()
+    Ewin.update_e_status()
+    player1=Player()
+    new_enemy = Peon()
+    enemies = {'Peon':Peon,'Ogre':Ogre,'Troll':Troll,'Dragon':Dragon}
+    gamecount = 1
     game_is_running = True
-    while game_is_running:
+    #game flow
+    while game_is_running and player1.isalive():
+        took_action = False
         keypress = stdscr.getch()
+        #player turn
         if keypress == ord('Q'):
             game_is_running = False
             break
@@ -29,7 +50,23 @@ def main(win):
         elif keypress == curses.KEY_LEFT:
             Swin.actselect(-1, False)
         elif keypress == curses.KEY_ENTER:
-            Swin.actselect(0, True)
+            took_action = True
+            #Swin.actselect(0, True)
+            if Swin.actions[Swin.curpos] == 'Attack':
+                pot_dmg = random.randint(5,20)
+                Pwin.a_feedback(new_enemy.is_attacked
+                        (pot_dmg,False))
+                if new_enemy.dmgcount() > 0:
+                    Ewin.update_e_status(0,new_enemy.dmgcount())
+            elif Swin.actions[Swin.curpos] == 'Defend':
+                pass
+            elif Swin.actions[Swin.curpos] == 'Special':
+                pass
+            elif Swin.actions[Swin.curpos] == 'Heal':
+                pass
+        if took_action == True:
+            #enemy turn
+
 
 
 
