@@ -3,6 +3,7 @@
 """Window writing and handling classes - assume a 40/40/20 split (enemy/player/status)"""
 
 import curses
+import time
 
 class Enemy_win(object):
     """Initialise a new enemy window with predetermined
@@ -37,6 +38,7 @@ class Enemy_win(object):
         elif result[1] == 'evade':
             resultstring = 'Enemy strikes but you dodge the blow'
         self.win.addstr(self.len_y-2,self.len_x -41,' '*40)
+        time.sleep(.5)
         self.win.addstr(self.len_y-2,self.len_x -(len(resultstring)+1),resultstring)
         self.win.refresh()
 
@@ -76,6 +78,7 @@ class Player_win(object):
         elif result[1] == 'hit':
             resultstring = 'Your attack hits for ' + str(result[0]) + ' damage'
         self.win.addstr(self.len_y-2,self.len_x -41,' '*40)
+        time.sleep(.2)
         self.win.addstr(self.len_y-2,self.len_x -(len(resultstring)+1),resultstring)
         self.win.refresh()
 
