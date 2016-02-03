@@ -87,14 +87,15 @@ def main(win):
             en_attrs = [x for x in new_enemy.__dict__.iteritems()if x[0] in en_attrlist] #get current hp,etc readings from enemy class
             for index,val in enumerate(en_attrs,1):
                 Ewin.update_e_status(index,val)
+
+            time.sleep(1)
+            enemyattack = random.randint(0,15)
+            Ewin.ea_feedback(player1.is_attacked(enemyattack,False))
             pl_attrs = [x for x in player1.__dict__.iteritems()if x[0] in pl_attrlist] #get current hp,etc readings from enemy class
             for index,val in enumerate(pl_attrs,1):
                 Pwin.update_p_status(index,val)
 
 
-            time.sleep(1)
-            enemyattack = random.randint(0,15)
-            Ewin.ea_feedback(player1.is_attacked(enemyattack,False))
             time.sleep(.5)
 
 
