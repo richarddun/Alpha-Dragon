@@ -9,6 +9,7 @@ class Enemy_win(object):
     """Initialise a new enemy window with predetermined
         positions"""
     def __init__(self,h,w):
+        self.firstrun = True
         self.starty, self.startx = 0,0 #enemy window on top
         self.len_y = int(round((h/5) * 2))
         self.len_x = w
@@ -16,17 +17,26 @@ class Enemy_win(object):
         self.win.border('|','|','-','-','+','+','+','+')
         self.win.refresh()
 
-    def update_e_status(self, kind = 0, value = 0):
-        self.to_update = kind
-        self.valupdate = value
-        self.kindlist = ['HP:','Armor:','Atk Dmg:','Evade:']
-        if self.to_update == 0: #if just writing first instance
-            for index,item in enumerate(self.kindlist,1):
-                self.win.addstr(index,self.len_x - 12,item)
-                self.win.refresh()
-        if self.to_update > 0:
-            self.win.addstr(self.to_update,1,'                      ')
-            self.win.addstr(self.to_update,1,self.kindlist[self.to_update]+str(self.valupdate))
+#    def update_e_status(self, kind = 0, value = 0):
+#        self.to_update = kind
+#        self.valupdate = value
+#        self.kindlist = ['HP:','Armor:','Atk Dmg:','Evade:']
+#        if self.firstrun == True: #if just writing first instance
+#            for index,item in enumerate(self.kindlist,1):
+#                self.win.addstr(index,self.len_x - 12,item)
+#                self.win.refresh()
+#            self.firstrun = False
+#        if self.to_update > 0:
+#            self.win.addstr(self.to_update,1,'                      ')
+#            self.win.addstr(self.to_update,1,self.kindlist[self.to_update]+str(self.valupdate))
+#            self.win.refresh()
+
+    def update_e_status(self,index,stat):
+        writestring = str(stat[0]) + ':' + str(stat[1])
+        self.win.addstr(index,self.len_x-12,writestring)
+        if index > 3 :
+            self.win.refresh()
+
     def ea_feedback(self,result):
         """Write output to player screen when attacking"""
         if result[1] == 'miss':
@@ -56,20 +66,28 @@ class Player_win(object):
         self.subsect = 3 #number of subsections in window
         self.win.refresh()
 
-    def update_p_status(self, kind = 0, value = 0):
-        self.to_update = kind
-        self.valupdate = value
-        self.subsectlen = self.len_x / self.subsect
-        self.xtextwrite = self.subsectlen - 19#possible length of kinds to write
-        self.kindlist = ['HP:','AP:','Armor:','Stamina:','Atk Dmg:','Evade:','Healing Potions:','Lvl:','Exp:']
-        if self.to_update == 0: #if just writing first instance
-            for index,item in enumerate(self.kindlist,1):
-                self.win.addstr(index,1,item)
-                self.win.refresh()
-        if self.to_update > 0:
-            self.win.addstr(self.to_update,1,'                      ')
-            self.win.addstr(self.to_update,1,self.kindlist[self.to_update]+str(self.valupdate))
-    
+#    def update_p_status(self, kind = 0, value = 0):
+#        self.to_update = kind
+#        self.valupdate = value
+#        self.subsectlen = self.len_x / self.subsect
+#        self.xtextwrite = self.subsectlen - 19#possible length of kinds to write
+#        self.kindlist = ['HP:','AP:','Armor:','Stamina:','Atk Dmg:','Evade:','Healing Potions:','Lvl:','Exp:']
+#        if self.to_update == 0: #if just writing first instance
+#            for index,item in enumerate(self.kindlist,1):
+#                self.win.addstr(index,1,item)
+#                self.win.refresh()
+#        if self.to_update > 0:
+#            self.win.addstr(self.to_update,1,'                      ')
+#            self.win.addstr(self.to_update,1,self.kindlist[self.to_update]+str(self.valupdate))
+
+    def update_p_status(self,index,stat):
+        self.writestring = str(stat[0]) + ':' + str(stat[1])
+        self.win.addstr(index,1,self.writestring)
+        if index > 4 :
+            self.win.refresh()
+
+
+
     def a_feedback(self,result):
         """Write output to player screen when attacking"""
         if result[1] == 'miss':

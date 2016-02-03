@@ -35,7 +35,6 @@ class Enemy(object):
                 self.dmgcount = dmg
                 return (dmg, 'hits') 
                 #hit, ignore armor
-
     def heal(self, amount):
         self.hp += amount
         return (amount, 'heal') 
@@ -49,6 +48,7 @@ class Peon(Enemy):
         self.armor = 10
         self.hp = 30
         self.atk = 2
+        self.eva = 1
 
 class Ogre(Enemy):
     """Ogre enemy class"""
@@ -59,6 +59,7 @@ class Ogre(Enemy):
         self.armor = 20
         self.hp = 40
         self.atk = 4
+        self.eva = 1
 
 class Troll(Enemy):
     """Troll enemy class"""
@@ -69,6 +70,7 @@ class Troll(Enemy):
         self.armor = 25
         self.hp = 55
         self.atk = 6
+        self.eva = 1
 
 class Dragon(Enemy):
     """Dragon boss class"""
@@ -79,6 +81,7 @@ class Dragon(Enemy):
         self.armor = 50
         self.hp = 150
         self.atk = 12
+        self.eva = 1
 
 class Player(object):
     def __init__(self):
@@ -91,6 +94,7 @@ class Player(object):
         #self.weapon = ('Shortsword', 5)
         self.potions = 3
         self.AP = 10
+        self.Atk = 5
 
     def is_attacked(self,dmg,special):
         if self.defending:

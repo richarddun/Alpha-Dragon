@@ -25,17 +25,27 @@ def main(win):
     stdscr.keypad(1)
     curses.curs_set(0)
     y,x=0,1
-    maxcoords = (38,90) #stdscr.getmaxyx()
+    maxcoords = stdscr.getmaxyx() #(38,90)
     stdscr.refresh()
     #instantiate the window layout
     Ewin = Enemy_win(maxcoords[y],maxcoords[x])
     Pwin = Player_win(maxcoords[y],maxcoords[x]) 
     Swin = Status_win(maxcoords[y],maxcoords[x])
-    Pwin.update_p_status()
-    Ewin.update_e_status()
+#    Pwin.update_p_status()
+#    Ewin.update_e_status()
     player1=Player()
     new_enemy = Peon()
     enemies = {'Peon':Peon,'Ogre':Ogre,'Troll':Troll,'Dragon':Dragon}
+#Write values of each entity to screen
+    en_attrlist = ['armor','hp','atk','eva']
+    pl_attrlist = ['hp','armor','Atk','evasion','potions','AP']
+    pl_attrs = [x for x in player1.__dict__.iteritems()if x[0] in pl_attrlist] #get current hp,etc readings from enemy class
+    for index,val in enumerate(pl_attrs,1):
+        Pwin.update_p_status(index,val)
+    en_attrs = [x for x in new_enemy.__dict__.iteritems()if x[0] in en_attrlist] #get current hp,etc readings from enemy class
+    for index,val in enumerate(en_attrs,1):
+        Ewin.update_e_status(index,val)
+    
     gamecount = 1
     game_is_running = True
     #game flow
@@ -59,8 +69,8 @@ def main(win):
                 #TODO-create a better dmg generator
                 Pwin.a_feedback(new_enemy.is_attacked
                         (pot_dmg,False))
-                if new_enemy.dmgcount > 0:
-                    Ewin.update_e_status(0,new_enemy.dmgcount)
+                #if new_enemy.dmgcount > 0:
+                 #   Ewin.update_e_status(0,new_enemy.dmgcount)
             elif Swin.actions[Swin.newpos] == 'Defend':
                player1.defending = True
                Pwin.d_feedback()
@@ -74,6 +84,14 @@ def main(win):
                     Pwin.h_feedback(player1.heal(healed))
                 #pass
         if took_action:
+            en_attrs = [x for x in new_enemy.__dict__.iteritems()if x[0] in en_attrlist] #get current hp,etc readings from enemy class
+            for index,val in enumerate(en_attrs,1):
+                Ewin.update_e_status(index,val)
+            pl_attrs = [x for x in player1.__dict__.iteritems()if x[0] in pl_attrlist] #get current hp,etc readings from enemy class
+            for index,val in enumerate(pl_attrs,1):
+                Pwin.update_p_status(index,val)
+
+
             time.sleep(1)
             enemyattack = random.randint(0,15)
             Ewin.ea_feedback(player1.is_attacked(enemyattack,False))
