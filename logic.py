@@ -37,9 +37,9 @@ def main(win):
     new_enemy = Peon()
     enemies = {'Peon':Peon,'Ogre':Ogre,'Troll':Troll,'Dragon':Dragon}
 #Write values of each entity to screen
-    en_attrlist = ['armor','hp','atk','eva']
-    pl_attrlist = ['hp','armor','Atk','evasion','potions','AP']
-    pl_attrs = [x for x in player1.__dict__.iteritems()if x[0] in pl_attrlist] #get current hp,etc readings from enemy class
+    en_attrlist = ['HP','Armor','Atk','Evade']
+    pl_attrlist = ['HP','Armor','Atk','Evade','AP','Potions']
+    pl_attrs = [x for x in player1.__dict__.iteritems()if x[0] in pl_attrlist] #get current hp,etc readings from player class
     for index,val in enumerate(pl_attrs,1):
         Pwin.update_p_status(index,val)
     en_attrs = [x for x in new_enemy.__dict__.iteritems()if x[0] in en_attrlist] #get current hp,etc readings from enemy class
@@ -79,24 +79,34 @@ def main(win):
                 Pwin.s_feedback(new_enemy.is_attacked
                         (pot_dmg,True))
             elif Swin.actions[Swin.newpos] == 'Heal':
-                if player1.potions > 0:
+                if player1.Potions > 0:
                     healed = random.randint(30,50)
-                    Pwin.h_feedback(player1.heal(healed))
+                else:
+                    healed = 0
+                    took_action = False
+                Pwin.h_feedback(player1.heal(healed))
+                
                 #pass
         if took_action:
-            en_attrs = [x for x in new_enemy.__dict__.iteritems()if x[0] in en_attrlist] #get current hp,etc readings from enemy class
+            en_attrs = [x for x in new_enemy.__dict__.iteritems()
+                    if x[0] in en_attrlist] 
+                            #get current hp,etc 
+                            #readings from enemy class
             for index,val in enumerate(en_attrs,1):
                 Ewin.update_e_status(index,val)
 
-            time.sleep(1)
+            time.sleep(.4)
             enemyattack = random.randint(0,15)
             Ewin.ea_feedback(player1.is_attacked(enemyattack,False))
-            pl_attrs = [x for x in player1.__dict__.iteritems()if x[0] in pl_attrlist] #get current hp,etc readings from enemy class
+            pl_attrs = [x for x in player1.__dict__.iteritems()
+                    if x[0] in pl_attrlist] 
+                            #get current hp,etc 
+                            #readings from player class
             for index,val in enumerate(pl_attrs,1):
                 Pwin.update_p_status(index,val)
 
 
-            time.sleep(.5)
+            time.sleep(.1)
 
 
 

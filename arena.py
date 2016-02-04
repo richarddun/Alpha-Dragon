@@ -17,24 +17,11 @@ class Enemy_win(object):
         self.win.border('|','|','-','-','+','+','+','+')
         self.win.refresh()
 
-#    def update_e_status(self, kind = 0, value = 0):
-#        self.to_update = kind
-#        self.valupdate = value
-#        self.kindlist = ['HP:','Armor:','Atk Dmg:','Evade:']
-#        if self.firstrun == True: #if just writing first instance
-#            for index,item in enumerate(self.kindlist,1):
-#                self.win.addstr(index,self.len_x - 12,item)
-#                self.win.refresh()
-#            self.firstrun = False
-#        if self.to_update > 0:
-#            self.win.addstr(self.to_update,1,'                      ')
-#            self.win.addstr(self.to_update,1,self.kindlist[self.to_update]+str(self.valupdate))
-#            self.win.refresh()
-
     def update_e_status(self,index,stat):
         writestring = str(stat[0]) + ':' + str(stat[1])
+        self.win.addstr(index,self.len_x-12,''*len(writestring))
         self.win.addstr(index,self.len_x-12,writestring)
-        if index > 3 :
+        if index == 4 :
             self.win.refresh()
 
     def ea_feedback(self,result):
@@ -49,7 +36,7 @@ class Enemy_win(object):
             resultstring = 'Enemy strikes but you dodge the blow'
         self.win.addstr(self.len_y-2,self.len_x -41,' '*40)
         self.win.refresh()
-        time.sleep(.5)
+        time.sleep(.1)
         self.win.addstr(self.len_y-2,self.len_x -(len(resultstring)+1),resultstring)
         self.win.refresh()
 
@@ -66,27 +53,12 @@ class Player_win(object):
         self.subsect = 3 #number of subsections in window
         self.win.refresh()
 
-#    def update_p_status(self, kind = 0, value = 0):
-#        self.to_update = kind
-#        self.valupdate = value
-#        self.subsectlen = self.len_x / self.subsect
-#        self.xtextwrite = self.subsectlen - 19#possible length of kinds to write
-#        self.kindlist = ['HP:','AP:','Armor:','Stamina:','Atk Dmg:','Evade:','Healing Potions:','Lvl:','Exp:']
-#        if self.to_update == 0: #if just writing first instance
-#            for index,item in enumerate(self.kindlist,1):
-#                self.win.addstr(index,1,item)
-#                self.win.refresh()
-#        if self.to_update > 0:
-#            self.win.addstr(self.to_update,1,'                      ')
-#            self.win.addstr(self.to_update,1,self.kindlist[self.to_update]+str(self.valupdate))
-
     def update_p_status(self,index,stat):
         self.writestring = str(stat[0]) + ':' + str(stat[1])
+        self.win.addstr(index,1,'          ')
         self.win.addstr(index,1,self.writestring)
-        if index > 4 :
+        if index == 6 :
             self.win.refresh()
-
-
 
     def a_feedback(self,result):
         """Write output to player screen when attacking"""
@@ -98,7 +70,7 @@ class Player_win(object):
             resultstring = 'Your attack hits for ' + str(result[0]) + ' damage'
         self.win.addstr(self.len_y-2,self.len_x -41,' '*40)
         self.win.refresh()
-        time.sleep(.2)
+        time.sleep(.1)
         self.win.addstr(self.len_y-2,self.len_x -(len(resultstring)+1),resultstring)
         self.win.refresh()
 
@@ -117,17 +89,31 @@ class Player_win(object):
         elif result[1] == 'hits':
             resultstring = 'Your gore the enemy for ' +str(result[0])+ ' damage'
         self.win.addstr(self.len_y-2,self.len_x -41,' '*40)
+        self.win.refresh()
+        time.sleep(.1)
         self.win.addstr(self.len_y-2,self.len_x -(len(resultstring)+1)
                 ,resultstring)
         self.win.refresh()
     
     def h_feedback(self,amount):
         """Write output to player screen when healed"""
-        resultstring = 'Used a potion.  Healed by '+str(amount)
-        self.win.addstr(self.len_y-2,self.len_x -41,' '*40)
-        self.win.addstr(self.len_y-2,self.len_x -(len(resultstring)+len(str(amount))-1) ,resultstring)
-        self.win.refresh()
-
+        if amount == 0:
+            resultstring = 'No potions left!'
+            self.win.addstr(self.len_y-2,self.len_x -41,' '*40)
+            self.win.refresh()
+            time.sleep(.1)
+            self.win.addstr(self.len_y-2,
+                    (self.len_x - len(resultstring))-1 ,resultstring)
+            self.win.refresh()
+        else:
+            resultstring = 'Used a potion.  Healed by '+str(amount)
+            self.win.addstr(self.len_y-2,self.len_x -41,' '*40)
+            self.win.refresh()
+            time.sleep(.1)
+            self.win.addstr(self.len_y-2,self.len_x -
+                (len(resultstring)+len(str(amount))-1) ,resultstring)
+            self.win.refresh()
+           
 
 class Status_win(object):
     """Initialise a new status window with predetermined
@@ -148,15 +134,19 @@ class Status_win(object):
         for index, value in enumerate(self.actions, 1):
             padding = (subsect_len - len(value))/2
             xstrloc = (subsect_len*index)- padding - len(value) 
-            self.textpos.update({value:((self.len_y/2)+1,xstrloc + (len(value)/2))})
+            self.textpos.update({value:
+                ((self.len_y/2)+1,xstrloc + (len(value)/2))})
             self.posref.append(self.textpos[value])
             if padding <= 1:
-                self.win.addstr(self.len_y/2,xstrloc,value[:2])#len/4 because we have 4 opts
+                self.win.addstr(self.len_y/2,xstrloc,value[:2])
             else:
                 self.win.addstr(self.len_y/2,xstrloc,value)
         
         self.win.addch(self.posref[0][0],self.posref[0][1], ord('^'))
-        self.win.addstr(self.len_y-2, self.len_x -75, 'Standard Attack with your main weapon. Higher chance of hit with less dmg.')
+        self.win.addstr(self.len_y-2,
+            self.len_x -75,'Standard Attack '+
+            'with your main weapon. Higher chance of hit '+
+            'with less dmg.')
         self.win.refresh()
     
     def actselect(self,way=0,confirm=False):
@@ -176,16 +166,24 @@ class Status_win(object):
             
             if self.newpos == 0:
                 self.win.addstr(infoloc_y,infoloc_x, '                                                                          ')
-                self.win.addstr(infoloc_y,infoloc_x, 'Standard Attack with your main weapon. Higher chance of hit with less dmg.')
+                self.win.addstr(infoloc_y,
+                    infoloc_x,'Standard Attack '+
+                    'with your main weapon. Higher chance '+
+                    'of hit with less dmg.')
             elif self.newpos == 1:
-                self.win.addstr(infoloc_y,infoloc_x, '                                                                          ')
-                self.win.addstr(infoloc_y,infoloc_x, 'Increase armor and evade chance for the next enemy attack.')
+                self.win.addstr(infoloc_y,infoloc_x,'                                                                          ')
+                self.win.addstr(infoloc_y,infoloc_x, 
+                        'Increase armor and evade chance '+
+                        'for the next enemy attack.')
             elif self.newpos == 2:
                 self.win.addstr(infoloc_y,infoloc_x, '                                                                          ')
-                self.win.addstr(infoloc_y,infoloc_x,'Double damage, ignore armor, lower chance of hit.')
+                self.win.addstr(infoloc_y,infoloc_x,
+                        'Double damage, ignore armor, '+
+                        'lower chance of hit.')
             elif self.newpos == 3:
                 self.win.addstr(infoloc_y,infoloc_x, '                                                                          ')
-                self.win.addstr(infoloc_y,infoloc_x, 'Use a potion to heal HP.')
+                self.win.addstr(infoloc_y,infoloc_x, 
+                        'Use a potion to heal HP.')
             
             self.addy, self.addx = self.posref[self.newpos]
             self.remy, self.remx = self.posref[self.curpos]
