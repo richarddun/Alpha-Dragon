@@ -111,15 +111,14 @@ class Player(object):
             #counts as a miss or absorption
             return (0, 'miss')
         if special == False:
-            self.full_dmg -= self.Armor
             if self.full_dmg <= 0:
                 return (0,'absorb')
                 #counts as a full absorption
             else :
                 self.HP -= self.full_dmg
                 if self.HP <= 0:
-                    self.HP = 0
-                    self.isalive = False
+                   self.HP = 0
+                   self.isalive = False
                 return (self.full_dmg, 'hit') 
                 #successful hit
         if special == True:
@@ -134,10 +133,6 @@ class Player(object):
                     self.isalive = False
                 return (self.full_dmg, 'hits')
                 #didn't evade, full hit no armor count
-        if self.defending:
-            self.Evade -= self.Evade
-            self.Armor -= self.Armor
-            self.defending = False
     def heal(self, amount):
         if amount > 0:
             self.HP += amount

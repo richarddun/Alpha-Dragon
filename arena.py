@@ -88,6 +88,8 @@ class Player_win(object):
             resultstring = 'Your special attack misses!'
         elif result[1] == 'hits':
             resultstring = 'Your gore the enemy for ' +str(result[0])+ ' damage'
+        elif result == 'noap':
+            resultstring = 'No AP to use this attack'
         self.win.addstr(self.len_y-2,self.len_x -41,' '*40)
         self.win.refresh()
         time.sleep(.1)

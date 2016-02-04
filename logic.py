@@ -6,6 +6,24 @@ import random
 from arena import *
 from entities import *
 
+def draw_pstats():
+    pl_attrlist = ['HP','Armor','Atk','Evade','AP','Potions']
+    pl_attrs = [x for x in player1.__dict__.iteritems()
+                if x[0] in pl_attrlist] 
+                #get current hp,etc 
+                #readings from player class
+    for index,val in enumerate(pl_attrs,1):
+        Pwin.update_p_status(index,val)
+
+def draw_estats():
+    en_attrlist = ['Type','Description','HP','Armor','Atk','Evade']
+    en_attrs = [x for x in new_enemy.__dict__.iteritems()
+                if x[0] in en_attrlist] 
+                #get current hp,etc 
+                #readings from enemy class
+    for index,val in enumerate(en_attrs,1):
+        Ewin.update_e_status(index,val)
+
 def doomselector():
     """Selects a random number identify next enemy"""
     doomroll = random.randint(0,100)
@@ -18,7 +36,8 @@ def doomselector():
 
 def main(win):
     """Main control flow"""
-    global stdscr
+    global stdscr,player1,new_enemy,Ewin,Pwin,Swin
+    #put vars in globals to access in functions
     stdscr = win
     curses.noecho()
     curses.cbreak()
@@ -31,28 +50,21 @@ def main(win):
     Ewin = Enemy_win(maxcoords[y],maxcoords[x])
     Pwin = Player_win(maxcoords[y],maxcoords[x]) 
     Swin = Status_win(maxcoords[y],maxcoords[x])
-#    Pwin.update_p_status()
-#    Ewin.update_e_status()
     player1=Player()
     new_enemy = Peon()
     enemies = {'Peon':Peon,'Ogre':Ogre,'Troll':Troll,'Dragon':Dragon}
-#Write values of each entity to screen
-    en_attrlist = ['Type','Description','HP','Armor','Atk','Evade']
-    pl_attrlist = ['HP','Armor','Atk','Evade','AP','Potions']
-    pl_attrs = [x for x in player1.__dict__.iteritems()if x[0] in pl_attrlist] #get current hp,etc readings from player class
-    for index,val in enumerate(pl_attrs,1):
-        Pwin.update_p_status(index,val)
-    en_attrs = [x for x in new_enemy.__dict__.iteritems()if x[0] in en_attrlist] #get current hp,etc readings from enemy class
-    for index,val in enumerate(en_attrs,1):
-        Ewin.update_e_status(index,val)
-    
     gamecount = 1
     game_is_running = True
+    draw_pstats()
+    draw_estats()
     #game flow
+    
     while player1.isalive and new_enemy.isalive:
         took_action = False
         keypress = stdscr.getch()
+        
         #player turn
+
         if keypress == ord('Q'):
             game_is_running = False
             break
@@ -76,8 +88,13 @@ def main(win):
                Pwin.d_feedback()
             elif Swin.actions[Swin.newpos] == 'Special':
                 pot_dmg = random.randint((player1.Atk/2)*player1.Atk,player1.Atk*player1.Atk)
-                Pwin.s_feedback(new_enemy.is_attacked
+                if player1.AP > 9:
+                    Pwin.s_feedback(new_enemy.is_attacked
                         (pot_dmg,True))
+                    player1.AP -= 10
+                elif player1.AP <= 9:
+                    Pwin.s_feedback('noap')
+                    took_action = False
             elif Swin.actions[Swin.newpos] == 'Heal':
                 if player1.Potions > 0:
                     healed = random.randint(30,50)
@@ -85,28 +102,23 @@ def main(win):
                     healed = 0
                     took_action = False
                 Pwin.h_feedback(player1.heal(healed))
-                
+        draw_pstats()
+        draw_estats()
                 #pass
         if took_action:
-            en_attrs = [x for x in new_enemy.__dict__.iteritems()
-                    if x[0] in en_attrlist] 
-                            #get current hp,etc 
-                            #readings from enemy class
-            for index,val in enumerate(en_attrs,1):
-                Ewin.update_e_status(index,val)
-
-            time.sleep(.4)
+            time.sleep(.3)
             enemyattack = random.randint((new_enemy.Atk/2)*new_enemy.Atk,new_enemy.Atk*new_enemy.Atk)
             Ewin.ea_feedback(player1.is_attacked(enemyattack,False))
-            pl_attrs = [x for x in player1.__dict__.iteritems()
-                    if x[0] in pl_attrlist] 
-                            #get current hp,etc 
-                            #readings from player class
-            for index,val in enumerate(pl_attrs,1):
-                Pwin.update_p_status(index,val)
-
-
-            time.sleep(.1)
+            draw_pstats()
+            time.sleep(.4)
+            if player1.defending:
+                player1.Evade = player1.Evade/2
+                player1.Armor = player1.Armor/2
+                player1.defending = False
+                draw_pstats()
+            if player1.AP <= 8:
+                player1.AP += 2
+                draw_pstats()
 
 
 
