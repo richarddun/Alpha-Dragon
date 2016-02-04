@@ -37,7 +37,7 @@ def main(win):
     new_enemy = Peon()
     enemies = {'Peon':Peon,'Ogre':Ogre,'Troll':Troll,'Dragon':Dragon}
 #Write values of each entity to screen
-    en_attrlist = ['HP','Armor','Atk','Evade']
+    en_attrlist = ['Type','Description','HP','Armor','Atk','Evade']
     pl_attrlist = ['HP','Armor','Atk','Evade','AP','Potions']
     pl_attrs = [x for x in player1.__dict__.iteritems()if x[0] in pl_attrlist] #get current hp,etc readings from player class
     for index,val in enumerate(pl_attrs,1):
@@ -49,7 +49,7 @@ def main(win):
     gamecount = 1
     game_is_running = True
     #game flow
-    while game_is_running and player1.isalive:
+    while player1.isalive and new_enemy.isalive:
         took_action = False
         keypress = stdscr.getch()
         #player turn
@@ -75,7 +75,7 @@ def main(win):
                player1.defending = True
                Pwin.d_feedback()
             elif Swin.actions[Swin.newpos] == 'Special':
-                pot_dmg = random.randint(15,40)
+                pot_dmg = random.randint((player1.Atk/2)*player1.Atk,player1.Atk*player1.Atk)
                 Pwin.s_feedback(new_enemy.is_attacked
                         (pot_dmg,True))
             elif Swin.actions[Swin.newpos] == 'Heal':
@@ -96,7 +96,7 @@ def main(win):
                 Ewin.update_e_status(index,val)
 
             time.sleep(.4)
-            enemyattack = random.randint(0,15)
+            enemyattack = random.randint((new_enemy.Atk/2)*new_enemy.Atk,new_enemy.Atk*new_enemy.Atk)
             Ewin.ea_feedback(player1.is_attacked(enemyattack,False))
             pl_attrs = [x for x in player1.__dict__.iteritems()
                     if x[0] in pl_attrlist] 

@@ -19,9 +19,9 @@ class Enemy_win(object):
 
     def update_e_status(self,index,stat):
         writestring = str(stat[0]) + ':' + str(stat[1])
-        self.win.addstr(index,self.len_x-12,''*len(writestring))
-        self.win.addstr(index,self.len_x-12,writestring)
-        if index == 4 :
+        self.win.addstr((index),self.len_x-46,' '*45)
+        self.win.addstr((index),self.len_x-((len(writestring)+1)),writestring)
+        if index == 6 :
             self.win.refresh()
 
     def ea_feedback(self,result):
