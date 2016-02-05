@@ -3,6 +3,7 @@
 import curses
 import time
 import random
+import os
 from arena import *
 from entities import *
 
@@ -34,6 +35,19 @@ def doomselector():
     if doomroll > 70:
         return 3
 
+#3,peon 11,troll 23,ogre 31,dragon
+
+def get_en_pic(index):
+    enlist = []
+    path = os.getcwd()
+    with open(os.path.join(path,'resources'),'rb') as picfile:
+        for pointer,line in enumerate(picfile,1):
+            if pointer >= index:
+                for char in line:
+                    if char == '@':
+                        return enlist
+                    enlist.append(char)
+
 def main(win):
     """Main control flow"""
     global stdscr,player1,new_enemy,Ewin,Pwin,Swin
@@ -58,7 +72,7 @@ def main(win):
     draw_pstats()
     draw_estats()
     #game flow
-    
+    Ewin.draw_en_sprite(get_en_pic(3))    
     while player1.isalive and new_enemy.isalive:
         took_action = False
         keypress = stdscr.getch()

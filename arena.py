@@ -39,6 +39,19 @@ class Enemy_win(object):
         time.sleep(.1)
         self.win.addstr(self.len_y-2,self.len_x -(len(resultstring)+1),resultstring)
         self.win.refresh()
+        
+    def draw_en_sprite(self,enlist):
+        yindex = 2
+        xreturn = (self.len_x / 2) - 25
+        xloc = xreturn
+        for char in enlist:
+            if char == '"':
+                yindex += 1
+                xloc = xreturn
+                pass
+            pxl = ord(char)
+            self.win.addch(yindex,xloc,pxl)
+            xloc += 1
 
 class Player_win(object):
     """Initialise a new player window with predetermined
