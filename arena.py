@@ -14,7 +14,10 @@ class Enemy_win(object):
         self.len_y = int(round((h/5) * 2))
         self.len_x = w
         self.win = curses.newwin(self.len_y,self.len_x,self.starty,self.startx)
-        self.win.border('|','|','-','-','+','+','+','+')
+        #self.win.border('|','|','-','-','+','+','+','+')
+        self.win.refresh()
+
+    def redraw(self):
         self.win.refresh()
 
     def update_e_status(self,index,stat):
@@ -49,9 +52,12 @@ class Enemy_win(object):
                 yindex += 1
                 xloc = xreturn
                 pass
-            pxl = ord(char)
-            self.win.addch(yindex,xloc,pxl)
-            xloc += 1
+            if char != '"':
+                pxl = ord(char)
+                #self.win.delch(yindex,xloc)
+                self.win.addch(yindex,xloc,pxl)
+                xloc += 1
+        self.win.refresh()
 
 class Player_win(object):
     """Initialise a new player window with predetermined
@@ -61,9 +67,12 @@ class Player_win(object):
         self.len_y = int(round((h/5) * 2))
         self.len_x = w
         self.win = curses.newwin(self.len_y,self.len_x,self.starty,self.startx)
-        self.win.border('|','|','-','-','+','+','+','+')
+        #self.win.border('|','|','-','-','+','+','+','+')
         #win.addstr(1,1,str(win.getmaxyx))
         self.subsect = 3 #number of subsections in window
+        self.win.refresh()
+
+    def redraw(self):
         self.win.refresh()
 
     def update_p_status(self,index,stat):
@@ -129,6 +138,21 @@ class Player_win(object):
                 (len(resultstring)+len(str(amount))-1) ,resultstring)
             self.win.refresh()
            
+    def draw_pl_sprite(self,enlist):
+        yindex = 0
+        xreturn = 20
+        xloc = xreturn
+        for char in enlist:
+            if char == '"':
+                yindex += 1
+                xloc = xreturn
+                pass
+            if char != '"':
+                pxl = ord(char)
+                #self.win.delch(yindex,xloc)
+                self.win.addch(yindex,xloc,pxl)
+                xloc += 1
+        self.win.refresh()
 
 class Status_win(object):
     """Initialise a new status window with predetermined
@@ -164,6 +188,9 @@ class Status_win(object):
             'with less dmg.')
         self.win.refresh()
     
+    def redraw(self):
+        self.win.refresh()
+
     def actselect(self,way=0,confirm=False):
         """move the selection icon and handle an enter key press to 
             activate a selection"""
@@ -205,4 +232,27 @@ class Status_win(object):
             self.win.addch(self.addy, self.addx, ord('^'))
             self.win.addch(self.remy, self.remx, ord(' '))
             self.win.refresh()
-        
+
+class Miniwin(object):
+    """Mini Window for interim updates"""
+    def __init__(self,h,w):
+        self.starty,self.startx = h/2,(w/2)-20
+        self.leny,self.lenx = 5, 20
+        self.win = curses.newwin(self.leny,self.lenx,self.starty,self.startx)
+        self.win.border('#','#','#','#','*','*','*','*')
+
+    def message(self,string,control=' ',yindex=1):
+        self.msg = string
+        self.ystartpoint,self.xstartpoint = yindex,self.startx+1
+        if control == 'remline':
+            self.win.addstr(self.ystartpoint,self.xstartpoint,' '*18)
+        if control == 'reline':
+            self.win.addstr(self.ystartpoint,self.xstartpoint,' '*18)
+            self.win.addstr(self.ystartpoint,self.xstartpoint,self.msg)
+
+    def destroy(self):
+        self.win.erase()
+
+
+
+

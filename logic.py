@@ -35,30 +35,32 @@ def doomselector():
     if doomroll > 70:
         return 3
 
-#3,peon 11,troll 23,ogre 31,dragon
-
-def get_en_pic(index):
-    enlist = []
+def get_ch_pic(index):
+    enlist = [' ']
     path = os.getcwd()
     with open(os.path.join(path,'resources'),'rb') as picfile:
         for pointer,line in enumerate(picfile,1):
             if pointer >= index:
                 for char in line:
-                    if char == '@':
+                    if char == '&':
                         return enlist
                     enlist.append(char)
 
 def main(win):
     """Main control flow"""
-    global stdscr,player1,new_enemy,Ewin,Pwin,Swin
     #put vars in globals to access in functions
+    global stdscr,player1,new_enemy,Ewin,Pwin,Swin
     stdscr = win
     curses.noecho()
     curses.cbreak()
     stdscr.keypad(1)
     curses.curs_set(0)
     y,x=0,1
-    maxcoords = stdscr.getmaxyx() #(38,90)
+    if (stdscr.getmaxyx()[0] < 52) or (stdscr.getmaxyx()[1] < 100):
+        curses.endwin()
+        print "Minimum terminal size to play is 52,100 (cols,lines)"
+        return
+    maxcoords = (52,100) #stdscr.getmaxyx() #(38,90)
     stdscr.refresh()
     #instantiate the window layout
     Ewin = Enemy_win(maxcoords[y],maxcoords[x])
@@ -66,13 +68,16 @@ def main(win):
     Swin = Status_win(maxcoords[y],maxcoords[x])
     player1=Player()
     new_enemy = Peon()
+    enemlist = ['Peon','Ogre','Troll','Dragon']
     enemies = {'Peon':Peon,'Ogre':Ogre,'Troll':Troll,'Dragon':Dragon}
     gamecount = 1
     game_is_running = True
+    picref = {'Peon':3,'Ogre':23,'Troll':11,'Dragon':31,'Knight':47}
+    Ewin.draw_en_sprite(get_ch_pic(31))
+    Pwin.draw_pl_sprite(get_ch_pic(picref['Knight']))
     draw_pstats()
     draw_estats()
     #game flow
-    Ewin.draw_en_sprite(get_en_pic(3))    
     while player1.isalive and new_enemy.isalive:
         took_action = False
         keypress = stdscr.getch()
@@ -133,11 +138,6 @@ def main(win):
             if player1.AP <= 8:
                 player1.AP += 2
                 draw_pstats()
-
-
-
-
-
 
 
     #end of program clean up
