@@ -56,11 +56,11 @@ def main(win):
     stdscr.keypad(1)
     curses.curs_set(0)
     y,x=0,1
-    if (stdscr.getmaxyx()[0] < 52) or (stdscr.getmaxyx()[1] < 100):
+    if (stdscr.getmaxyx()[0] < 51) or (stdscr.getmaxyx()[1] < 91):
         curses.endwin()
-        print "Minimum terminal size to play is 52,100 (cols,lines)"
+        print "Minimum terminal size to play is 51,91 (cols,lines)"
         return
-    maxcoords = (52,100) #stdscr.getmaxyx() #(38,90)
+    maxcoords = (51,91) #stdscr.getmaxyx() #(38,90)
     stdscr.refresh()
     #instantiate the window layout
     Ewin = Enemy_win(maxcoords[y],maxcoords[x])
