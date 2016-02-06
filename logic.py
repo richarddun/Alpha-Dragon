@@ -28,12 +28,14 @@ def draw_estats():
 def doomselector():
     """Selects a random number identify next enemy"""
     doomroll = random.randint(0,100)
-    if doomroll > 0 and doomroll < 40:
+    if doomroll >= 0 and doomroll <= 40:
         return 1
-    if doomroll > 40 and doomroll < 70:
+    elif doomroll >= 40 and doomroll <= 70:
         return 2 
-    if doomroll > 70:
+    elif doomroll >= 70:
         return 3
+    else:
+        return 1
 
 def get_ch_pic(index):
     enlist = [' ']
@@ -56,7 +58,13 @@ def main(win):
     stdscr.keypad(1)
     curses.curs_set(0)
     y,x=0,1
-    #if (stdscr.getmaxyx()[y] < 70) or (stdscr.getmaxyx()[x] < 91):
+    enemlist = ['Peon','Ogre','Troll','Dragon']
+    enemies = {'Peon':Peon,'Ogre':Ogre,'Troll':Troll,'Dragon':Dragon}
+    gamecount = 1
+    game_is_running = True
+    picref = {'Peon':3,'Ogre':23,'Troll':11,'Dragon':31,'Knight':47,'Title':68}
+    #title=68
+   #if (stdscr.getmaxyx()[y] < 70) or (stdscr.getmaxyx()[x] < 91):
      #   curses.endwin()
       #  print "Minimum terminal size to play is 51,91 (cols,lines)"
        # return
@@ -64,88 +72,102 @@ def main(win):
     stdscr.refresh()
     title = Title_win(maxcoords[y],maxcoords[x])
     title.draw_title(get_ch_pic(68))
-    title_display = True
-    if title.write_prologue(get_ch_pic(81)):
-        title.rem_title()
+    #title_display = True
+    #if title.write_prologue(get_ch_pic(81)):
+    #    title.rem_title()
 
-    
     #instantiate the window layout
     Ewin = Enemy_win(maxcoords[y],maxcoords[x])
     Pwin = Player_win(maxcoords[y],maxcoords[x]) 
     Swin = Status_win(maxcoords[y],maxcoords[x])
     player1=Player()
-    new_enemy = Peon()
-    enemlist = ['Peon','Ogre','Troll','Dragon']
-    enemies = {'Peon':Peon,'Ogre':Ogre,'Troll':Troll,'Dragon':Dragon}
-    gamecount = 1
-    game_is_running = True
-    picref = {'Peon':3,'Ogre':23,'Troll':11,'Dragon':31,'Knight':47}
-    #title=68
-    Ewin.draw_en_sprite(get_ch_pic(31))
-    Pwin.draw_pl_sprite(get_ch_pic(picref['Knight']))
-    draw_pstats()
-    draw_estats()
-    #game flow
-    while player1.isalive and new_enemy.isalive:
-        took_action = False
-        keypress = stdscr.getch()
-        
-        #player turn
+    while player1.isalive and game_is_running:
+        if gamecount % 10 != 0:
+            doom = doomselector()
+            if doom == 1:
+                new_enemy = Peon()
+                monster = 'Peon'
+            if doom == 2:
+                new_enemy = Ogre()
+                monster = 'Ogre'
+            if doom == 3:
+                new_enemy = Troll()
+                monster = 'Troll'
+        elif gamecount % 10 == 0:
+            new_enemy = Dragon()
+            monster = 'Dragon'
 
-        if keypress == ord('Q'):
-            game_is_running = False
-            break
-        elif keypress == curses.KEY_RIGHT:
-            Swin.actselect(1, False)
-        elif keypress == curses.KEY_LEFT:
-            Swin.actselect(-1, False)
-        elif keypress == curses.KEY_ENTER:
-            took_action = True
-            player1.defending = False
-            #Swin.actselect(0, True)
-            if Swin.actions[Swin.newpos] == 'Attack':
-                pot_dmg = random.randint(5,20)
-                #TODO-create a better dmg generator
-                Pwin.a_feedback(new_enemy.is_attacked
-                        (pot_dmg,False))
-                #if new_enemy.dmgcount > 0:
-                 #   Ewin.update_e_status(0,new_enemy.dmgcount)
-            elif Swin.actions[Swin.newpos] == 'Defend':
-               player1.defending = True
-               Pwin.d_feedback()
-            elif Swin.actions[Swin.newpos] == 'Special':
-                pot_dmg = random.randint((player1.Atk/2)*player1.Atk,player1.Atk*player1.Atk)
-                if player1.AP > 9:
-                    Pwin.s_feedback(new_enemy.is_attacked
-                        (pot_dmg,True))
-                    player1.AP -= 10
-                elif player1.AP <= 9:
-                    Pwin.s_feedback('noap')
-                    took_action = False
-            elif Swin.actions[Swin.newpos] == 'Heal':
-                if player1.Potions > 0:
-                    healed = random.randint(30,50)
-                else:
-                    healed = 0
-                    took_action = False
-                Pwin.h_feedback(player1.heal(healed))
+        announce = Miniwin(maxcoords[y],maxcoords[x])
+        announce.message('Your Next Opponent is: ',' ',1)
+        time.sleep(1)
+        announce.message(monster,' ',2)
+        time.sleep(3)
+        announce.clear_win()
+        
+        Ewin.draw_en_sprite(get_ch_pic(picref[monster]))
+        Pwin.draw_pl_sprite(get_ch_pic(picref['Knight']))
         draw_pstats()
         draw_estats()
-                #pass
-        if took_action:
-            time.sleep(.3)
-            enemyattack = random.randint((new_enemy.Atk/2)*new_enemy.Atk,new_enemy.Atk*new_enemy.Atk)
-            Ewin.ea_feedback(player1.is_attacked(enemyattack,False))
-            draw_pstats()
-            time.sleep(.4)
-            if player1.defending:
-                player1.Evade = player1.Evade/2
-                player1.Armor = player1.Armor/2
+        
+        #game flow
+
+        while player1.isalive and new_enemy.isalive:
+            took_action = False
+            keypress = stdscr.getch()
+            
+            #player turn
+
+            if keypress == ord('Q'):
+                game_is_running = False
+                break
+            elif keypress == curses.KEY_RIGHT:
+                Swin.actselect(1, False)
+            elif keypress == curses.KEY_LEFT:
+                Swin.actselect(-1, False)
+            elif keypress == curses.KEY_ENTER:
+                took_action = True
                 player1.defending = False
+                if Swin.actions[Swin.newpos] == 'Attack':
+                    pot_dmg = random.randint(5,20)
+                    #TODO-create a better dmg generator
+                    Pwin.a_feedback(new_enemy.is_attacked
+                            (pot_dmg,False))
+                elif Swin.actions[Swin.newpos] == 'Defend':
+                   player1.defending = True
+                   Pwin.d_feedback()
+                elif Swin.actions[Swin.newpos] == 'Special':
+                    pot_dmg = random.randint((player1.Atk/2)*player1.Atk,player1.Atk*player1.Atk)
+                    if player1.AP > 9:
+                        Pwin.s_feedback(new_enemy.is_attacked
+                            (pot_dmg,True))
+                        player1.AP -= 10
+                    elif player1.AP <= 9:
+                        Pwin.s_feedback('noap')
+                        took_action = False
+                elif Swin.actions[Swin.newpos] == 'Heal':
+                    if player1.Potions > 0:
+                        healed = random.randint(30,50)
+                    else:
+                        healed = 0
+                        took_action = False
+                    Pwin.h_feedback(player1.heal(healed))
+            draw_pstats()
+            draw_estats()
+            
+            if took_action:
+                time.sleep(.3)
+                enemyattack = random.randint((new_enemy.Atk/2)*new_enemy.Atk,new_enemy.Atk*new_enemy.Atk)
+                Ewin.ea_feedback(player1.is_attacked(enemyattack,False))
                 draw_pstats()
-            if player1.AP <= 8:
-                player1.AP += 2
-                draw_pstats()
+                time.sleep(.4)
+                if player1.defending:
+                    player1.Evade = player1.Evade/2
+                    player1.Armor = player1.Armor/2
+                    player1.defending = False
+                    draw_pstats()
+                if player1.AP <= 8:
+                    player1.AP += 2
+                    draw_pstats()
 
 
     #end of program clean up

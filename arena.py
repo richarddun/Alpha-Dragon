@@ -87,7 +87,7 @@ class Enemy_win(object):
         self.win.addstr(self.len_y-2,self.len_x -(len(resultstring)+1),resultstring)
         self.win.refresh()
         
-    def draw_en_sprite(self,enlist):
+    def draw_en_sprite(self,enlist,destruct=False):
         yindex = 2
         xreturn = (self.len_x / 2) - 25
         xloc = xreturn
@@ -97,10 +97,17 @@ class Enemy_win(object):
                 xloc = xreturn
                 pass
             if char != '"':
-                pxl = ord(char)
+                if destruct == True:
+                    pxl = ord(' ')
+                elif destruct == False:
+                    pxl = ord(char)
                 #self.win.delch(yindex,xloc)
                 self.win.addch(yindex,xloc,pxl)
                 xloc += 1
+        self.win.refresh()
+
+    def clear_win(self):
+        self.win.erase()
         self.win.refresh()
 
 class Player_win(object):
@@ -198,6 +205,10 @@ class Player_win(object):
                 xloc += 1
         self.win.refresh()
 
+    def clear_win(self):
+        self.win.erase()
+        self.win.refresh()
+
 class Status_win(object):
     """Initialise a new status window with predetermined
         positions"""
@@ -280,22 +291,29 @@ class Status_win(object):
 class Miniwin(object):
     """Mini Window for interim updates"""
     def __init__(self,h,w):
-        self.starty,self.startx = h/2,(w/2)-20
-        self.leny,self.lenx = 5, 20
+        self.starty,self.startx = h/4,w/3
+        self.leny,self.lenx = 20, 50
         self.win = curses.newwin(self.leny,self.lenx,self.starty,self.startx)
         self.win.border('#','#','#','#','*','*','*','*')
+        self.win.refresh()
 
     def message(self,string,control=' ',yindex=1):
         self.msg = string
-        self.ystartpoint,self.xstartpoint = yindex,self.startx+1
+        self.ystartpoint,self.xstartpoint = yindex,5
         if control == 'remline':
             self.win.addstr(self.ystartpoint,self.xstartpoint,' '*18)
+            self.win.refresh()
         if control == 'reline':
             self.win.addstr(self.ystartpoint,self.xstartpoint,' '*18)
             self.win.addstr(self.ystartpoint,self.xstartpoint,self.msg)
+            self.win.refresh()
+        elif control == ' ':
+            self.win.addstr(self.ystartpoint,self.xstartpoint,self.msg)
+            self.win.refresh()
 
-    def destroy(self):
+    def clear_win(self):
         self.win.erase()
+        self.win.refresh()
 
 
 
