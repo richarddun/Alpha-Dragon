@@ -31,7 +31,7 @@ def doomselector():
     if doomroll > 0 and doomroll < 40:
         return 1
     if doomroll > 40 and doomroll < 70:
-        return 2
+        return 2 
     if doomroll > 70:
         return 3
 
@@ -56,12 +56,19 @@ def main(win):
     stdscr.keypad(1)
     curses.curs_set(0)
     y,x=0,1
-    if (stdscr.getmaxyx()[0] < 51) or (stdscr.getmaxyx()[1] < 91):
-        curses.endwin()
-        print "Minimum terminal size to play is 51,91 (cols,lines)"
-        return
-    maxcoords = (51,91) #stdscr.getmaxyx() #(38,90)
+    #if (stdscr.getmaxyx()[y] < 70) or (stdscr.getmaxyx()[x] < 91):
+     #   curses.endwin()
+      #  print "Minimum terminal size to play is 51,91 (cols,lines)"
+       # return
+    maxcoords = stdscr.getmaxyx() #(51,150)#(38,90)
     stdscr.refresh()
+    title = Title_win(maxcoords[y],maxcoords[x])
+    title.draw_title(get_ch_pic(68))
+    title_display = True
+    if title.write_prologue(get_ch_pic(81)):
+        title.rem_title()
+
+    
     #instantiate the window layout
     Ewin = Enemy_win(maxcoords[y],maxcoords[x])
     Pwin = Player_win(maxcoords[y],maxcoords[x]) 
@@ -73,6 +80,7 @@ def main(win):
     gamecount = 1
     game_is_running = True
     picref = {'Peon':3,'Ogre':23,'Troll':11,'Dragon':31,'Knight':47}
+    #title=68
     Ewin.draw_en_sprite(get_ch_pic(31))
     Pwin.draw_pl_sprite(get_ch_pic(picref['Knight']))
     draw_pstats()

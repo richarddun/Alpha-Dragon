@@ -5,6 +5,50 @@
 import curses
 import time
 
+class Title_win(object):
+    def __init__(self,h,w):
+        self.starty, self.startx = 0,0
+        self.len_y,self.len_x = self.starty, w
+        self.win = curses.newwin(self.len_y,self.len_x,self.starty,self.startx)
+
+    def draw_title(self,enlist):
+        yindex = 1
+        xreturn = (self.len_x / 2) - 25
+        xloc = xreturn
+        for char in enlist:
+            if char == '"':
+                yindex += 1
+                xloc = xreturn
+                pass
+            if char != '"':
+                pxl = ord(char)
+                #self.win.delch(yindex,xloc)
+                self.win.addch(yindex,xloc,pxl)
+                xloc += 1
+        self.win.refresh()
+
+    def write_prologue(self,string):
+        yindex = 20
+        xreturn = (self.len_x /2) -25
+        xloc = xreturn
+        for char in string:
+            if char == '"':
+                time.sleep(2)
+                yindex += 1
+                xloc = xreturn
+            if char != '"':
+                txt = ord(char)
+                self.win.addch(yindex,xloc,txt)
+                self.win.refresh()
+                time.sleep(.1)
+                xloc += 1
+        time.sleep(4)
+        return True
+
+    def rem_title(self):
+        self.win.erase()
+        self.win.refresh()
+
 class Enemy_win(object):
     """Initialise a new enemy window with predetermined
         positions"""
