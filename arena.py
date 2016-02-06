@@ -31,7 +31,15 @@ class Title_win(object):
         yindex = 20
         xreturn = (self.len_x /2) -25
         xloc = xreturn
+        writing_prologue = True
+        curses.halfdelay(1)
         for char in string:
+            brkchar = self.win.getch()
+            if brkchar == ord('Q'):
+                curses.nocbreak()
+                curses.cbreak()
+                return True
+                break
             if char == '"':
                 time.sleep(2)
                 yindex += 1
@@ -40,7 +48,7 @@ class Title_win(object):
                 txt = ord(char)
                 self.win.addch(yindex,xloc,txt)
                 self.win.refresh()
-                time.sleep(.1)
+                #time.sleep(.1)
                 xloc += 1
         time.sleep(4)
         return True

@@ -73,8 +73,8 @@ def main(win):
     title = Title_win(maxcoords[y],maxcoords[x])
     title.draw_title(get_ch_pic(68))
     #title_display = True
-    #if title.write_prologue(get_ch_pic(81)):
-    #    title.rem_title()
+    if title.write_prologue(get_ch_pic(81)):
+        title.rem_title()
 
     #instantiate the window layout
     Ewin = Enemy_win(maxcoords[y],maxcoords[x])
