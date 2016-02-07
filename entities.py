@@ -51,7 +51,7 @@ class Peon(Enemy):
         Enemy.__init__(self)
         self.Type = 'Peon'
         self.Description = 'Orc Peon armed with a barbed mace'
-        self.HP = 30
+        self.HP = 50
         self.Armor = 2
         self.Atk = 2
         self.Evade = 1
@@ -63,7 +63,7 @@ class Ogre(Enemy):
         Enemy.__init__(self)
         self.Type = 'Ogre'
         self.Description = 'Ogre armed with a polearm'
-        self.HP = 40
+        self.HP = 90
         self.Armor = 5
         self.Atk = 4
         self.Evade = 1
@@ -75,7 +75,7 @@ class Troll(Enemy):
         Enemy.__init__(self)
         self.Type = 'Troll'
         self.Description = 'Troll armed with a War-Axe'
-        self.HP = 60
+        self.HP = 130
         self.Armor = 10
         self.Atk = 4
         self.Evade = 1
@@ -87,7 +87,7 @@ class Dragon(Enemy):
         Enemy.__init__(self)
         self.Type = 'Dragon'
         self.Description = 'Green Dragon with thick scales'
-        self.HP = 120
+        self.HP = 450
         self.Armor = 15
         self.Atk = 4
         self.Evade = 1

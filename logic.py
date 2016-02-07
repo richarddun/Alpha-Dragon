@@ -62,18 +62,18 @@ def main(win):
     enemies = {'Peon':Peon,'Ogre':Ogre,'Troll':Troll,'Dragon':Dragon}
     gamecount = 1
     game_is_running = True
-    picref = {'Peon':3,'Ogre':23,'Troll':11,'Dragon':31,'Knight':47,'Title':68}
+    picref = {'Peon':3,'Troll':17,'Ogre':29,'Dragon':40,'Knight':56,'Title':77,'Prologue':90}
     #title=68
-   #if (stdscr.getmaxyx()[y] < 70) or (stdscr.getmaxyx()[x] < 91):
-     #   curses.endwin()
-      #  print "Minimum terminal size to play is 51,91 (cols,lines)"
-       # return
+    if (stdscr.getmaxyx()[y] < 50) or (stdscr.getmaxyx()[x] < 189):
+        curses.endwin()
+        print "Full screen terminal required to experience the game in SLD (super low definition)"
+        return
     maxcoords = stdscr.getmaxyx() #(51,150)#(38,90)
     stdscr.refresh()
     title = Title_win(maxcoords[y],maxcoords[x])
-    title.draw_title(get_ch_pic(68))
+    title.draw_title(get_ch_pic(picref['Title']))
     #title_display = True
-    if title.write_prologue(get_ch_pic(81)):
+    if title.write_prologue(get_ch_pic(picref['Prologue'])):
         title.rem_title()
 
     #instantiate the window layout
@@ -149,9 +149,14 @@ def main(win):
                     else:
                         real_dmg = pot_dmg
                     if player1.AP > 9:
-                        Pwin.s_feedback(new_enemy.is_attacked
-                            (real_dmg,True))
-                        player1.AP -= 10
+                        hit = 3
+                        if random.randint(1,3) == hit:
+                            Pwin.s_feedback(new_enemy.is_attacked
+                                (real_dmg,True))
+                            player1.AP -= 10
+                        else:
+                            player1.AP -= 10
+                            Pwin.s_feedback(('miss','miss'))
                     elif player1.AP <= 9:
                         Pwin.s_feedback('noap')
                         took_action = False
@@ -172,6 +177,18 @@ def main(win):
                     Ewin.ea_feedback(player1.is_attacked(enemyattack,False))
                     draw_pstats()
                     time.sleep(.4)
+                if player1.HP <= 0:
+                    death_notice = Miniwin(10,60,maxcoords[y]/3,(maxcoords[x]/2)-15)
+                    death_notice.message('You have been slain.',' ',2)
+                    time.sleep(2)
+                    death_notice.message('Final score: ',' ',3)
+                    time.sleep(3)
+                    death_notice.message(str(player1.EXP),' ',4)
+                    time.sleep(2)
+                    death_notice.message('Thanks for playing!',' ',5)
+                    time.sleep(4)
+                    death_notice.clear_win()
+                    return
                 if player1.defending:
                     player1.Evade = player1.Evade/2
                     player1.Armor = player1.Armor/2
@@ -180,15 +197,33 @@ def main(win):
                 if player1.AP <= 8:
                     player1.AP += 2
                     draw_pstats()
+        Ewin.draw_en_sprite(get_ch_pic(picref[monster]),True)#call True to remove ascii
         en_ack_win = Miniwin(7,55,maxcoords[y]/3,(maxcoords[x]/2)-15)
         en_ack_win.message('You have slain ' + new_enemy.Type,' ',2)
         time.sleep(1)
+        gamecount += 1
+        if gamecount > 10:
+            final_summary = Miniwin(10,60,maxcoords[y]/3,(maxcoords[x]/2)-15)
+            final_summary.message('Congratulations!',' ',2)
+            time.sleep(.5)
+            final_summary.message('You have defeated the Alpha Dragon.',' ',3)
+            time.sleep(1)
+            final_summary.message('Your final score :',' ',4)
+            time.sleep(1)
+            score = '--> ' + str(player1.EXP)
+            final_summary.message(score,' ',6)
+            time.sleep(1)
+            final_summary.message('Thanks for playing!',' ',8)
+            time.sleep(5)
+            final_summary.clear_win()
+            return
         if player1.HP % 2 == 0:
             en_ack_win.message('Searching the enemy corpse you find 2 potions',' ',4)
             player1.Potions += 2
             time.sleep(2)
         else:
             en_ack_win.message('You find a potion near to the enemy corpse',' ',4)
+            player1.Potions += 1
             time.sleep(2)
         en_ack_win.clear_win()
         lev_evaluated = False
@@ -203,6 +238,8 @@ def main(win):
             player1.EXP += new_enemy.EXP
             player1.expeval = 0
             for lv in range(levels):
+                summary.message('                                                   ',' ',1)
+                time.sleep(.3)
                 summary.message('Level Up! Welcome to Level '+str(player1.Level+1),
                         ' ',1)
                 player1.Level += 1
@@ -220,7 +257,7 @@ def main(win):
                     time.sleep(2)
                 else:
                     player1.Armor += 2
-                    summary.message('Max Armor increased by 2',' ',4)
+                    summary.message('Armor increased by 2',' ',4)
                     time.sleep(2)
                 if (player1.Atk + 1) > player1.maxatk:
                     player1.Atk = player1.maxatk
@@ -230,11 +267,10 @@ def main(win):
                     player1.Atk += 1
                     summary.message('Atk increased by 1',' ',6)
                     time.sleep(2)
-            time.sleep(2)
+            time.sleep(1)
             summary.clear_win()
 
         draw_pstats()
-        gamecount += 1
 
 
     #end of program clean up
