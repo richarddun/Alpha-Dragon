@@ -1,5 +1,3 @@
-#!/usr/local/bin/python2.7
-
 """Window writing and handling classes - assume a 40/40/20 split (enemy/player/status)"""
 
 import curses

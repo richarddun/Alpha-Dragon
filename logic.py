@@ -1,4 +1,4 @@
-#!/usr/local/bin/python2.7
+#!/usr/bin/env python2
 """control flow, instance handling"""
 import curses
 import time
