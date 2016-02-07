@@ -8,7 +8,7 @@ from arena import *
 from entities import *
 
 def draw_pstats():
-    pl_attrlist = ['HP','Armor','Atk','Evade','AP','Potions']
+    pl_attrlist = ['HP','Armor','Atk','Evade','AP','Potions','Level']
     pl_attrs = [x for x in player1.__dict__.iteritems()
                 if x[0] in pl_attrlist] 
                 #get current hp,etc 
@@ -97,8 +97,12 @@ def main(win):
             new_enemy = Dragon()
             monster = 'Dragon'
 
-        announce = Miniwin(maxcoords[y],maxcoords[x])
-        announce.message('Your Next Opponent is: ',' ',1)
+        announce = Miniwin(5,40,maxcoords[y]/2,(maxcoords[x]/2)-12)
+        if gamecount == 1:
+            announce.message('Your First Opponent is: ',' ',1)
+            time.sleep(1)
+        else:
+            announce.message('Your Next Opponent is: ',' ',1)
         time.sleep(1)
         announce.message(monster,' ',2)
         time.sleep(3)
@@ -114,12 +118,11 @@ def main(win):
         while player1.isalive and new_enemy.isalive:
             took_action = False
             keypress = stdscr.getch()
-            
             #player turn
 
             if keypress == ord('Q'):
                 game_is_running = False
-                break
+                return
             elif keypress == curses.KEY_RIGHT:
                 Swin.actselect(1, False)
             elif keypress == curses.KEY_LEFT:
@@ -128,18 +131,26 @@ def main(win):
                 took_action = True
                 player1.defending = False
                 if Swin.actions[Swin.newpos] == 'Attack':
-                    pot_dmg = random.randint(5,20)
+                    pot_dmg = random.randint(4,player1.Atk*4)
+                    if pot_dmg > player1.maxndmg:
+                        real_dmg = player1.maxndmg
+                    else:
+                        real_dmg = pot_dmg
                     #TODO-create a better dmg generator
                     Pwin.a_feedback(new_enemy.is_attacked
-                            (pot_dmg,False))
+                            (real_dmg,False))
                 elif Swin.actions[Swin.newpos] == 'Defend':
                    player1.defending = True
                    Pwin.d_feedback()
                 elif Swin.actions[Swin.newpos] == 'Special':
-                    pot_dmg = random.randint((player1.Atk/2)*player1.Atk,player1.Atk*player1.Atk)
+                    pot_dmg = player1.Atk*player1.Atk
+                    if pot_dmg > player1.maxsdmg:
+                        real_dmg = player1.maxsdmg
+                    else:
+                        real_dmg = pot_dmg
                     if player1.AP > 9:
                         Pwin.s_feedback(new_enemy.is_attacked
-                            (pot_dmg,True))
+                            (real_dmg,True))
                         player1.AP -= 10
                     elif player1.AP <= 9:
                         Pwin.s_feedback('noap')
@@ -155,11 +166,12 @@ def main(win):
             draw_estats()
             
             if took_action:
-                time.sleep(.3)
-                enemyattack = random.randint((new_enemy.Atk/2)*new_enemy.Atk,new_enemy.Atk*new_enemy.Atk)
-                Ewin.ea_feedback(player1.is_attacked(enemyattack,False))
-                draw_pstats()
-                time.sleep(.4)
+                if new_enemy.isalive:
+                    time.sleep(.3)
+                    enemyattack = random.randint((new_enemy.Atk/2)*new_enemy.Atk,new_enemy.Atk*new_enemy.Atk)
+                    Ewin.ea_feedback(player1.is_attacked(enemyattack,False))
+                    draw_pstats()
+                    time.sleep(.4)
                 if player1.defending:
                     player1.Evade = player1.Evade/2
                     player1.Armor = player1.Armor/2
@@ -168,6 +180,61 @@ def main(win):
                 if player1.AP <= 8:
                     player1.AP += 2
                     draw_pstats()
+        en_ack_win = Miniwin(7,55,maxcoords[y]/3,(maxcoords[x]/2)-15)
+        en_ack_win.message('You have slain ' + new_enemy.Type,' ',2)
+        time.sleep(1)
+        if player1.HP % 2 == 0:
+            en_ack_win.message('Searching the enemy corpse you find 2 potions',' ',4)
+            player1.Potions += 2
+            time.sleep(2)
+        else:
+            en_ack_win.message('You find a potion near to the enemy corpse',' ',4)
+            time.sleep(2)
+        en_ack_win.clear_win()
+        lev_evaluated = False
+        levels = 0
+        if (player1.EXP + new_enemy.EXP) >= player1.explim:
+            summary = Miniwin(15,60,maxcoords[y]/3,(maxcoords[x]/2)-15)
+            while player1.expeval >= 0:
+                player1.expeval = ((player1.EXP + new_enemy.EXP) - player1.explim)
+                if player1.expeval >= 0:
+                    levels += 1
+                player1.explim += 20
+            player1.EXP += new_enemy.EXP
+            player1.expeval = 0
+            for lv in range(levels):
+                summary.message('Level Up! Welcome to Level '+str(player1.Level+1),
+                        ' ',1)
+                player1.Level += 1
+                if player1.HP + 20 > player1.maxlevhp:
+                    player1.HP = player1.maxlevhp
+                    summary.message('HP has been maxed out',' ',2)
+                    time.sleep(2)
+                else: 
+                    player1.HP += 20
+                    summary.message('Max HP increased by 20',' ',2)
+                    time.sleep(2)
+                if (player1.Armor + 10) > player1.maxarmor:
+                    summary.message('Armor has been maxed out',' ',4)
+                    player1.Armor = player1.maxarmor
+                    time.sleep(2)
+                else:
+                    player1.Armor += 2
+                    summary.message('Max Armor increased by 2',' ',4)
+                    time.sleep(2)
+                if (player1.Atk + 1) > player1.maxatk:
+                    player1.Atk = player1.maxatk
+                    summary.message('Atk has been maxed out',' ',6)
+                    time.sleep(2)
+                else:
+                    player1.Atk += 1
+                    summary.message('Atk increased by 1',' ',6)
+                    time.sleep(2)
+            time.sleep(2)
+            summary.clear_win()
+
+        draw_pstats()
+        gamecount += 1
 
 
     #end of program clean up

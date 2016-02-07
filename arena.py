@@ -298,10 +298,9 @@ class Status_win(object):
 
 class Miniwin(object):
     """Mini Window for interim updates"""
-    def __init__(self,h,w):
-        self.starty,self.startx = h/4,w/3
-        self.leny,self.lenx = 20, 50
-        self.win = curses.newwin(self.leny,self.lenx,self.starty,self.startx)
+    def __init__(self,h,w,starty,startx):
+        self.leny,self.lenx = h, w
+        self.win = curses.newwin(self.leny,self.lenx,starty,startx)
         self.win.border('#','#','#','#','*','*','*','*')
         self.win.refresh()
 
@@ -316,8 +315,11 @@ class Miniwin(object):
             self.win.addstr(self.ystartpoint,self.xstartpoint,self.msg)
             self.win.refresh()
         elif control == ' ':
-            self.win.addstr(self.ystartpoint,self.xstartpoint,self.msg)
-            self.win.refresh()
+            try:
+                self.win.addstr(self.ystartpoint,self.xstartpoint,self.msg)
+                self.win.refresh()
+            except:
+                pass
 
     def clear_win(self):
         self.win.erase()
