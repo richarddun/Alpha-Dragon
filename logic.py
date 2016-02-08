@@ -129,7 +129,7 @@ def main(win):
                 Swin.actselect(1, False)
             elif keypress == curses.KEY_LEFT:
                 Swin.actselect(-1, False)
-            elif keypress == curses.KEY_ENTER:
+            elif (keypress == curses.KEY_ENTER) or (keypress == 10) or (keypress == 13):
                 took_action = True
                 player1.defending = False
                 if Swin.actions[Swin.newpos] == 'Attack':
