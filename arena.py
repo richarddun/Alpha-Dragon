@@ -1,4 +1,5 @@
 """Window writing and handling classes - assume a 40/40/20 split (enemy/player/status)"""
+"""Richard Dunne, 2016 - richard.w.dunne@gmail.com"""
 
 import curses
 import time

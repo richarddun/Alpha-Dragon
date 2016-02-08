@@ -1,5 +1,5 @@
 """Entites handled in-game"""
-
+"""Richard Dunne 2016, richard.w.dunne@gmail.com"""
 import random
 import time
 

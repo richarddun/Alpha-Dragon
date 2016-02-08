@@ -1,5 +1,7 @@
 #!/usr/bin/env python2
 """control flow, instance handling"""
+"""Richard Dunne 2016, richard.w.dunne@gmail.com"""
+
 import curses
 import time
 import random
