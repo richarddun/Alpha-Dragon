@@ -66,7 +66,7 @@ def main(win):
     game_is_running = True
     picref = {'Peon':3,'Troll':17,'Ogre':29,'Dragon':40,'Knight':56,'Title':77,'Prologue':90}
     #title=68
-    if (stdscr.getmaxyx()[y] < 50) or (stdscr.getmaxyx()[x] < 189):
+    if (stdscr.getmaxyx()[y] < 40) or (stdscr.getmaxyx()[x] < 143):
         curses.endwin()
         print "Full screen terminal required to experience the game in SLD (super low definition)"
         return

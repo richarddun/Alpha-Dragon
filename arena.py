@@ -96,7 +96,7 @@ class Enemy_win(object):
         
     def draw_en_sprite(self,enlist,destruct=False):
         yindex = 2
-        xreturn = (self.len_x / 2) - 25
+        xreturn = (self.len_x / 2)
         xloc = xreturn
         for char in enlist:
             if char == '"':
