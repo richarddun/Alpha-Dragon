@@ -197,20 +197,24 @@ class Player_win(object):
             self.win.refresh()
            
     def draw_pl_sprite(self,enlist):
-        yindex = 0
-        xreturn = 20
+        yindex = self.len_y / 10
+        xreturn = self.len_x / 4
         xloc = xreturn
-        for char in enlist:
-            if char == '"':
-                yindex += 1
-                xloc = xreturn
-                pass
-            if char != '"':
-                pxl = ord(char)
-                #self.win.delch(yindex,xloc)
-                self.win.addch(yindex,xloc,pxl)
-                xloc += 1
-        self.win.refresh()
+        try:
+            for char in enlist:
+                if char == '"':
+                    yindex += 1
+                    xloc = xreturn
+                    pass
+                if char != '"':
+                    pxl = ord(char)
+                    #self.win.delch(yindex,xloc)
+                    self.win.addch(yindex,xloc,pxl)
+                    xloc += 1
+                    self.win.refresh()
+        except:
+
+            self.win.refresh()
 
     def clear_win(self):
         self.win.erase()
