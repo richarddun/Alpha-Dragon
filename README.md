@@ -7,10 +7,12 @@ Writes to terminal window at 189x50 (full screen terminal required at present)
 To use :
 
 git clone https://github.com/richarddun/curses_battle_game
+
 chmod +x logic.py
 
 (move terminal to full screen)
 
 ./logic.py
 
-
+shift & q to skip prologue
+shift & q to quit game
