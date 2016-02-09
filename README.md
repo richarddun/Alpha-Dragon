@@ -1,11 +1,16 @@
 # Turn based battle game written in curses (Python)
 
-This is an evolution of a simple text based 'one enemy at a time' survival battle game (simple_battle_game). Only difference is the curses implementation.
-Currently it is a WIP.
-Writes to terminal window at 189x50 (full screen terminal required at present)
-Main entry point to program is logic.py
+Turn based tactical fantasy battle game painted on a terminal using curses (Python 2.7)
 
-Plans to include : 
-- Collectible loot
-- Eventually implement unicurses, right now Windows is not supported
+Writes to terminal window at 189x50 (full screen terminal required at present)
+
+To use :
+
+git clone https://github.com/richarddun/curses_battle_game
+chmod +x logic.py
+
+(move terminal to full screen)
+
+./logic.py
+
 
