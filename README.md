@@ -15,4 +15,5 @@ chmod +x logic.py
 ./logic.py
 
 shift & q to skip prologue
+
 shift & q to quit game
