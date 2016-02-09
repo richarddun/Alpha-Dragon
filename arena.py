@@ -98,20 +98,23 @@ class Enemy_win(object):
         yindex = 2
         xreturn = (self.len_x / 2)
         xloc = xreturn
-        for char in enlist:
-            if char == '"':
-                yindex += 1
-                xloc = xreturn
-                pass
-            if char != '"':
-                if destruct == True:
-                    pxl = ord(' ')
-                elif destruct == False:
-                    pxl = ord(char)
-                #self.win.delch(yindex,xloc)
-                self.win.addch(yindex,xloc,pxl)
-                xloc += 1
-        self.win.refresh()
+        try:
+            for char in enlist:
+                if char == '"':
+                    yindex += 1
+                    xloc = xreturn
+                    pass
+                if char != '"':
+                    if destruct == True:
+                        pxl = ord(' ')
+                    elif destruct == False:
+                        pxl = ord(char)
+                    #self.win.delch(yindex,xloc)
+                    self.win.addch(yindex,xloc,pxl)
+                    xloc += 1
+                    self.win.refresh()
+        except:
+            self.win.refresh()
 
     def clear_win(self):
         self.win.erase()

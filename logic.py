@@ -143,6 +143,7 @@ def main(win):
                             (real_dmg,False))
                 elif Swin.actions[Swin.newpos] == 'Defend':
                    player1.defending = True
+                   player1.AP += 2
                    Pwin.d_feedback()
                 elif Swin.actions[Swin.newpos] == 'Special':
                     pot_dmg = player1.Atk*player1.Atk
