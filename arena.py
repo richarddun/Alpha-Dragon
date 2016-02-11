@@ -88,7 +88,9 @@ class Enemy_win(object):
             resultstring = 'Enemy hits you for ' + str(result[0]) + ' damage'
         elif result[1] == 'evade':
             resultstring = 'Enemy strikes but you dodge the blow'
-        self.win.addstr(self.len_y-2,self.len_x -41,' '*40)
+        elif result[1] == 'hits':
+            resultstring = 'Enemy crushes your defense! '+str(result[0])+' damage taken!'
+        self.win.addstr(self.len_y-2,self.len_x -46,' '*45)
         self.win.refresh()
         time.sleep(.1)
         self.win.addstr(self.len_y-2,self.len_x -(len(resultstring)+1),resultstring)
@@ -140,8 +142,7 @@ class Player_win(object):
         self.writestring = str(stat[0]) + ':' + str(stat[1])
         self.win.addstr(index,1,'          ')
         self.win.addstr(index,1,self.writestring)
-        if index == 6 :
-            self.win.refresh()
+        self.win.refresh()
 
     def a_feedback(self,result):
         """Write output to player screen when attacking"""
@@ -151,7 +152,7 @@ class Player_win(object):
             resultstring = 'Your attack barely dents its armor'
         elif result[1] == 'hit':
             resultstring = 'Your attack hits for ' + str(result[0]) + ' damage'
-        self.win.addstr(self.len_y-2,self.len_x -41,' '*40)
+        self.win.addstr(self.len_y-2,self.len_x -44,' '*43)
         self.win.refresh()
         time.sleep(.1)
         self.win.addstr(self.len_y-2,self.len_x -(len(resultstring)+1),resultstring)
@@ -159,8 +160,8 @@ class Player_win(object):
 
     def d_feedback(self):
         """Write output to player screen while defending"""
-        resultstring = 'You defend.  Armor, Evade increase.'
-        self.win.addstr(self.len_y-2,self.len_x -41,' '*40)
+        resultstring = 'You raise your defences and increase armor.'
+        self.win.addstr(self.len_y-2,self.len_x -44,' '*43)
         self.win.addstr(self.len_y-2,self.len_x - (len(resultstring)+1)
                 ,resultstring)
         self.win.refresh()
@@ -173,7 +174,7 @@ class Player_win(object):
             resultstring = 'Your gore the enemy for ' +str(result[0])+ ' damage'
         elif result == 'noap':
             resultstring = 'No AP to use this attack'
-        self.win.addstr(self.len_y-2,self.len_x -41,' '*40)
+        self.win.addstr(self.len_y-2,self.len_x -44,' '*43)
         self.win.refresh()
         time.sleep(.1)
         self.win.addstr(self.len_y-2,self.len_x -(len(resultstring)+1)
@@ -184,7 +185,7 @@ class Player_win(object):
         """Write output to player screen when healed"""
         if amount == 0:
             resultstring = 'No potions left!'
-            self.win.addstr(self.len_y-2,self.len_x -41,' '*40)
+            self.win.addstr(self.len_y-2,self.len_x -44,' '*43)
             self.win.refresh()
             time.sleep(.1)
             self.win.addstr(self.len_y-2,
@@ -192,7 +193,8 @@ class Player_win(object):
             self.win.refresh()
         else:
             resultstring = 'Used a potion.  Healed by '+str(amount)
-            self.win.addstr(self.len_y-2,self.len_x -41,' '*40)
+            self.win.addstr(self.len_y-2,self.len_x - 44,' '*43)
+
             self.win.refresh()
             time.sleep(.1)
             self.win.addstr(self.len_y-2,self.len_x -
@@ -284,8 +286,8 @@ class Status_win(object):
             elif self.newpos == 1:
                 self.win.addstr(infoloc_y,infoloc_x,'                                                                          ')
                 self.win.addstr(infoloc_y,infoloc_x, 
-                        'Increase armor and evade chance '+
-                        'for the next enemy attack.')
+                        'Increase armor for the next '+
+                        'enemy attack. Immediate boost to AP.')
             elif self.newpos == 2:
                 self.win.addstr(infoloc_y,infoloc_x, '                                                                          ')
                 self.win.addstr(infoloc_y,infoloc_x,

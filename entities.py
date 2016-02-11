@@ -51,9 +51,9 @@ class Peon(Enemy):
         Enemy.__init__(self)
         self.Type = 'Peon'
         self.Description = 'Orc Peon armed with a barbed mace'
-        self.HP = 50
-        self.Armor = 2
-        self.Atk = 2
+        self.HP = 100
+        self.Armor = 5
+        self.Atk = 4
         self.Evade = 1
         self.EXP = 10
 
@@ -63,11 +63,11 @@ class Ogre(Enemy):
         Enemy.__init__(self)
         self.Type = 'Ogre'
         self.Description = 'Ogre armed with a polearm'
-        self.HP = 90
-        self.Armor = 5
-        self.Atk = 4
+        self.HP = 120
+        self.Armor = 8
+        self.Atk = 5
         self.Evade = 1
-        self.EXP = 30
+        self.EXP = 40
 
 class Troll(Enemy):
     """Troll enemy class"""
@@ -77,7 +77,7 @@ class Troll(Enemy):
         self.Description = 'Troll armed with a War-Axe'
         self.HP = 130
         self.Armor = 10
-        self.Atk = 4
+        self.Atk = 6
         self.Evade = 1
         self.EXP = 50
 
@@ -89,7 +89,7 @@ class Dragon(Enemy):
         self.Description = 'Green Dragon with thick scales'
         self.HP = 450
         self.Armor = 15
-        self.Atk = 4
+        self.Atk = 10
         self.Evade = 1
         self.EXP = 150
 
@@ -107,6 +107,7 @@ class Player(object):
         self.Atk = 6
         self.maxatk = 10 
         self.Evade = 2
+        self.maxevade = 5
         #self.inventory = {'Weapons':[],'Artefacts':[],'Scrolls':[]}
         #self.weapon = ('Shortsword', 5)
         self.AP = 10
@@ -117,38 +118,40 @@ class Player(object):
         self.maxndmg = 50
         self.maxsdmg = 90
         self.expeval = 0
+        self.usedspecial = False
 
-    def is_attacked(self,dmg,special):
-        self.full_dmg=dmg
+    def is_attacked(self,dmg,hitroll=0,special=False):
+        self.hitch = hitroll
         if self.defending:
-            self.Evade += self.Evade
             self.Armor += self.Armor
-        if self.full_dmg <= 0:
-            #counts as a miss or absorption
-            return (0, 'miss')
         if special == False:
-            if self.full_dmg <= 0:
-                return (0,'absorb')
-                #counts as a full absorption
-            else :
-                self.HP -= self.full_dmg
+            self.full_dmg=dmg - self.Armor
+            if self.hitch > self.Evade:
+                if self.full_dmg <= 0:
+                    return (0,'absorb')
+                    #counts as a full absorption
+                else:
+                    self.HP -= self.full_dmg
                 if self.HP <= 0:
                    self.HP = 0
                    self.isalive = False
-                return (self.full_dmg, 'hit') 
+                return (self.full_dmg, 'hit')
+            elif self.hitch <= self.Evade:
+                return (0,'miss')
                 #successful hit
         if special == True:
-            self.full_dmg = dmg - self.Evade
-            if self.full_dmg <= 0:
-                return (0,'evade')
-            #counts as an evasion
-            else:
-                self.HP -= self.full_dmg
-                if self.HP <= 0:
-                    self.HP = 0
-                    self.isalive = False
-                return (self.full_dmg, 'hits')
-                #didn't evade, full hit no armor count
+            if self.hitch > self.Evade:
+                self.full_dmg = dmg 
+                if self.full_dmg <= 0:
+                    return (0,'evade')
+                else:
+                    self.HP -= self.full_dmg
+                    if self.HP <= 0:
+                        self.HP = 0
+                        self.isalive = False
+                    return (self.full_dmg, 'hits')
+            elif self.hitch <= self.Evade:
+                return (0,'miss')
     def heal(self, amount):
         if amount > 0:
             self.HP += amount
