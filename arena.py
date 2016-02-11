@@ -98,7 +98,7 @@ class Enemy_win(object):
         
     def draw_en_sprite(self,enlist,destruct=False):
         yindex = 2
-        xreturn = (self.len_x / 2)
+        xreturn = ((self.len_x / 10) * 4)
         xloc = xreturn
         try:
             for char in enlist:
@@ -202,7 +202,7 @@ class Player_win(object):
             self.win.refresh()
            
     def draw_pl_sprite(self,enlist):
-        yindex = self.len_y / 10
+        yindex = 1
         xreturn = self.len_x / 4
         xloc = xreturn
         try:

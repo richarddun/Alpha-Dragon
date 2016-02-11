@@ -239,12 +239,20 @@ def main(win):
             return
         if player1.HP % 2 == 0:
             en_ack_win.message('Searching the enemy corpse you find 2 potions',' ',4)
-            player1.Potions += 2
-            time.sleep(2)
+            if player1.Potions <= 6:
+                player1.Potions += 2
+                time.sleep(2)
+            elif player1.Potions >=8:
+                en_ack_win.message('Cannot hold any more potions!',' ',5)
+                time.sleep(2)
         else:
             en_ack_win.message('You find a potion near to the enemy corpse',' ',4)
-            player1.Potions += 1
-            time.sleep(2)
+            if player1.Potions <= 7:
+                player1.Potions += 1
+                time.sleep(2)
+            elif player1.Potions >=8:
+                en_ack_win.message('Cannot hold any more potions!',' ',5)
+                time.sleep(2)
         en_ack_win.clear_win()
         lev_evaluated = False
         levels = 0
