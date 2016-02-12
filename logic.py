@@ -64,7 +64,7 @@ def main(win):
     enemies = {'Peon':Peon,'Ogre':Ogre,'Troll':Troll,'Dragon':Dragon}
     gamecount = 1
     game_is_running = True
-    picref = {'Peon':3,'Troll':17,'Ogre':29,'Dragon':40,'Knight':56,'Title':77,'Prologue':90}
+    picref = {'Peon':3,'Troll':24,'Ogre':45,'Dragon':66,'Knight':87,'Title':108,'Prologue':121}
     #title=68
     if (stdscr.getmaxyx()[y] < 40) or (stdscr.getmaxyx()[x] < 143):
         curses.endwin()
@@ -84,7 +84,7 @@ def main(win):
     Swin = Status_win(maxcoords[y],maxcoords[x])
     player1=Player()
     while player1.isalive and game_is_running:
-        if gamecount % 10 != 0:
+        if gamecount % 15 != 0:
             doom = doomselector()
             if doom == 1:
                 new_enemy = Peon()
@@ -95,7 +95,7 @@ def main(win):
             if doom == 3:
                 new_enemy = Troll()
                 monster = 'Troll'
-        elif gamecount % 10 == 0:
+        elif gamecount % 15 == 0:
             new_enemy = Dragon()
             monster = 'Dragon'
 
@@ -166,11 +166,22 @@ def main(win):
                         Pwin.s_feedback('noap')
                         took_action = False
                 elif Swin.actions[Swin.newpos] == 'Heal':
+                    pot_heal = random.randint(30,50)
                     if player1.Potions > 0:
-                        healed = random.randint(30,50)
-                    else:
+                        if player1.HP >= player1.maxhp:
+                            healed = 999
+                            #already at max HP
+                            took_action = False
+                        elif pot_heal + player1.HP > player1.maxhp:
+                            healed = player1.maxhp - player1.HP
+                            #can't heal past maxhp at cur level
+                        else:
+                            healed = pot_heal
+                    elif player1.Potions <= 0:
                         healed = 0
                         took_action = False
+                    else:
+                        healed = pot_heal
                     Pwin.h_feedback(player1.heal(healed))
             draw_pstats()
             draw_estats()
@@ -190,7 +201,7 @@ def main(win):
 
                     else:
                         en_hitroll = random.randint(0,10)
-                        enemyattack = random.randint(new_enemy.Atk,new_enemy.Atk*new_enemy.Atk)
+                        enemyattack = random.randint(new_enemy.Atk*2,new_enemy.Atk*new_enemy.Atk)
                         Ewin.ea_feedback(player1.is_attacked(enemyattack,en_hitroll,False))
                     draw_pstats()
                     time.sleep(.4)
@@ -220,9 +231,10 @@ def main(win):
         Ewin.draw_en_sprite(get_ch_pic(picref[monster]),True)#call True to remove ascii
         en_ack_win = Miniwin(7,55,maxcoords[y]/3,(maxcoords[x]/2)-15)
         en_ack_win.message('You have slain ' + new_enemy.Type,' ',2)
+        player1.EXP += new_enemy.EXP
         time.sleep(1)
         gamecount += 1
-        if gamecount > 10:
+        if gamecount > 15:
             final_summary = Miniwin(10,60,maxcoords[y]/3,(maxcoords[x]/2)-15)
             final_summary.message('Congratulations!',' ',2)
             time.sleep(.5)
@@ -276,7 +288,7 @@ def main(win):
                     summary.message('HP has been maxed out   ','reline',2)
                     time.sleep(2)
                 else: 
-                    player1.HP += 20
+                    player1.maxhp += 20
                     summary.message('Max HP increased by 20   ','reline',2)
                     time.sleep(1)
                 if (player1.Armor + 1) > player1.maxarmor:

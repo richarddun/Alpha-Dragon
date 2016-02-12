@@ -61,9 +61,9 @@ class Enemy_win(object):
         positions"""
     def __init__(self,h,w):
         self.firstrun = True
-        self.starty, self.startx = 0,0 #enemy window on top
-        self.len_y = int(round((h/5) * 2))
-        self.len_x = w
+        self.starty, self.startx = 0,int(round(w/2)) #enemy window on top
+        self.len_y = int(round(h * .7))#70% of total win
+        self.len_x = int(round(w / 2))
         self.win = curses.newwin(self.len_y,self.len_x,self.starty,self.startx)
         #self.win.border('|','|','-','-','+','+','+','+')
         self.win.refresh()
@@ -73,10 +73,10 @@ class Enemy_win(object):
 
     def update_e_status(self,index,stat):
         writestring = str(stat[0]) + ':' + str(stat[1])
-        self.win.addstr((index),self.len_x-46,' '*45)
-        self.win.addstr((index),self.len_x-((len(writestring)+1)),writestring)
-        if index == 6 :
-            self.win.refresh()
+        #nullen = len(writestring) 
+        self.win.addstr(index,self.len_x-(len(writestring)+10),' '*(len(writestring)+10))
+        self.win.addstr(index,self.len_x-len(writestring),writestring)
+        self.win.refresh()
 
     def ea_feedback(self,result):
         """Write output to player screen when attacking"""
@@ -97,8 +97,8 @@ class Enemy_win(object):
         self.win.refresh()
         
     def draw_en_sprite(self,enlist,destruct=False):
-        yindex = 2
-        xreturn = ((self.len_x / 10) * 4)
+        yindex = int(round(self.len_y * .4))
+        xreturn = int(round(self.len_x * .1))
         xloc = xreturn
         try:
             for char in enlist:
@@ -126,13 +126,13 @@ class Player_win(object):
     """Initialise a new player window with predetermined
         positions"""
     def __init__(self,h,w):
-        self.starty, self.startx = int(round((h/5) * 2)), 0
-        self.len_y = int(round((h/5) * 2))
-        self.len_x = w
+        self.starty, self.startx = 0,0#player win on left
+        self.len_y = int(round(h * .7))
+        self.len_x = int(round(w/2))
         self.win = curses.newwin(self.len_y,self.len_x,self.starty,self.startx)
         #self.win.border('|','|','-','-','+','+','+','+')
         #win.addstr(1,1,str(win.getmaxyx))
-        self.subsect = 3 #number of subsections in window
+        #self.subsect = 3 #number of subsections in window
         self.win.refresh()
 
     def redraw(self):
@@ -191,9 +191,17 @@ class Player_win(object):
             self.win.addstr(self.len_y-2,
                     (self.len_x - len(resultstring))-1 ,resultstring)
             self.win.refresh()
+        elif amount == 999:
+            resultstring = 'Already at max health!'
+            self.win.addstr(self.len_y-2,self.len_x -44,' '*43)
+            self.win.refresh()
+            time.sleep(.1)
+            self.win.addstr(self.len_y-2,
+                    (self.len_x - len(resultstring))-1 ,resultstring)
+            self.win.refresh()
         else:
             resultstring = 'Used a potion.  Healed by '+str(amount)
-            self.win.addstr(self.len_y-2,self.len_x - 44,' '*43)
+            self.win.addstr(self.len_y-2,self.len_x - 44,' '*44)
 
             self.win.refresh()
             time.sleep(.1)
@@ -202,8 +210,8 @@ class Player_win(object):
             self.win.refresh()
            
     def draw_pl_sprite(self,enlist):
-        yindex = 1
-        xreturn = self.len_x / 4
+        yindex = int(round(self.len_y * .4))
+        xreturn = int(round(self.len_x * .2))
         xloc = xreturn
         try:
             for char in enlist:
@@ -234,8 +242,8 @@ class Status_win(object):
         self.posref = []
         self.actions = ['Attack','Defend','Special','Heal']
         self.newpos = 0
-        starty, startx = int(round((h/5) * subsect)), 0
-        self.len_y = int(round(h/5))
+        starty, startx = int(round(h * .7)), 0
+        self.len_y = int(round(h * .3))
         self.len_x = w
         subsect_len = self.len_x / subsect
         self.win = curses.newwin(self.len_y,self.len_x,starty,startx)

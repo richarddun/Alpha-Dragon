@@ -51,11 +51,11 @@ class Peon(Enemy):
         Enemy.__init__(self)
         self.Type = 'Peon'
         self.Description = 'Orc Peon armed with a barbed mace'
-        self.HP = 100
+        self.HP = 70
         self.Armor = 5
         self.Atk = 4
         self.Evade = 1
-        self.EXP = 10
+        self.EXP = 5
 
 class Ogre(Enemy):
     """Ogre enemy class"""
@@ -63,11 +63,11 @@ class Ogre(Enemy):
         Enemy.__init__(self)
         self.Type = 'Ogre'
         self.Description = 'Ogre armed with a polearm'
-        self.HP = 120
+        self.HP = 80
         self.Armor = 8
         self.Atk = 5
         self.Evade = 1
-        self.EXP = 40
+        self.EXP = 10
 
 class Troll(Enemy):
     """Troll enemy class"""
@@ -75,11 +75,11 @@ class Troll(Enemy):
         Enemy.__init__(self)
         self.Type = 'Troll'
         self.Description = 'Troll armed with a War-Axe'
-        self.HP = 130
+        self.HP = 80
         self.Armor = 10
         self.Atk = 6
         self.Evade = 1
-        self.EXP = 50
+        self.EXP = 15
 
 class Dragon(Enemy):
     """Dragon boss class"""
@@ -87,11 +87,11 @@ class Dragon(Enemy):
         Enemy.__init__(self)
         self.Type = 'Dragon'
         self.Description = 'Green Dragon with thick scales'
-        self.HP = 450
+        self.HP = 300
         self.Armor = 15
         self.Atk = 10
         self.Evade = 1
-        self.EXP = 150
+        self.EXP = 100
 
 class Player(object):
     def __init__(self):
@@ -153,10 +153,12 @@ class Player(object):
             elif self.hitch <= self.Evade:
                 return (0,'miss')
     def heal(self, amount):
-        if amount > 0:
+        if amount > 1 and amount < 999:
             self.HP += amount
             self.Potions -= 1
-        if amount == 0:
+        elif amount == 0:
             return 0
+        elif amount == 999:
+            return 999
         return amount
 
