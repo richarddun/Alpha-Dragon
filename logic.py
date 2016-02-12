@@ -189,8 +189,8 @@ def main(win):
             if took_action:
                 if new_enemy.isalive:
                     if player1.defending:
-                        if random.randint(1,3) == 1:
-                            en_hitroll = random.randint(0,5) #if defending, en has a chance to fiercely hit
+                        if random.randint(1,2) == 1:
+                            en_hitroll = random.randint(0,7) #if defending, en has a chance to fiercely hit
                             enemyattack = random.randint(new_enemy.Atk*2, new_enemy.Atk*new_enemy.Atk+new_enemy.Atk + player1.Level)
                             Ewin.ea_feedback(player1.is_attacked(enemyattack,en_hitroll,True))
                             time.sleep(.4)
