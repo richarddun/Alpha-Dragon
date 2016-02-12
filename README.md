@@ -6,11 +6,10 @@ Writes to terminal window at 189x50 (full screen terminal required at present)
 
 To use :
 
-git clone https://github.com/richarddun/curses_battle_game
+Python 2.7 installation is required.
+Terminal window should be maximised.
 
-chmod +x logic.py
-
-(move terminal to full screen)
+Extract all files, run :
 
 ./logic.py
 
