@@ -1,3 +1,7 @@
+#Alpha Dragon (Windows)
+
+To grab the exe installer, visit https://www.dropbox.com/s/a29zogmlwwguj72/AlphaDragon.exe?dl=0
+
 To run this game, you may either : 
 
 open a CMD window, resize to full screen size, navigate to the application directory (where the files are installed) and then run logic.exe
