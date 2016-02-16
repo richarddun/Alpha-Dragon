@@ -221,7 +221,7 @@ def main():
                     death_notice.clear_win()
                     return
                 if player1.defending:
-                    player1.Evade = player1.Evade /2
+                    player1.Evade -= 2
                     player1.Armor = player1.Armor /2
                     player1.defending = False
                     draw_pstats()

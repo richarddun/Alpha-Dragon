@@ -124,7 +124,7 @@ class Player(object):
         self.hitch = hitroll
         if self.defending:
             self.Armor += self.Armor
-            self.Evade += self.Evade
+            self.Evade += 2
         if special == False:
             self.full_dmg=dmg - self.Armor
             if self.hitch > self.Evade:
