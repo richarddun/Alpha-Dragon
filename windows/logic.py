@@ -221,7 +221,7 @@ def main():
                     death_notice.clear_win()
                     return
                 if player1.defending:
-                    player1.Evade -= 2
+                    player1.Evade -= 1
                     player1.Armor = player1.Armor /2
                     player1.defending = False
                     draw_pstats()
@@ -318,9 +318,10 @@ def main():
                     summary.message('Evade has been maxed out  ','reline',8)
                     time.sleep(1)
                 else:
-                    player1.Evade += 1
-                    summary.message('Evade increased by 1     ','reline',8)
-                    time.sleep(1)
+                    if player1.Level % 2 == 0:
+                        player1.Evade += 1
+                        summary.message('Evade increased by 1     ','reline',8)
+                        time.sleep(1)
             time.sleep(2)
             summary.clear_win()
 

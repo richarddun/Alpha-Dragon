@@ -51,7 +51,7 @@ class Peon(Enemy):
         Enemy.__init__(self)
         self.Type = 'Peon'
         self.Description = 'Orc Peon armed with a barbed mace'
-        self.HP = 70
+        self.HP = 100
         self.Armor = 5
         self.Atk = 4
         self.Evade = 1
@@ -63,7 +63,7 @@ class Ogre(Enemy):
         Enemy.__init__(self)
         self.Type = 'Ogre'
         self.Description = 'Ogre armed with a polearm'
-        self.HP = 80
+        self.HP = 120
         self.Armor = 8
         self.Atk = 5
         self.Evade = 1
@@ -75,7 +75,7 @@ class Troll(Enemy):
         Enemy.__init__(self)
         self.Type = 'Troll'
         self.Description = 'Troll armed with a War-Axe'
-        self.HP = 80
+        self.HP = 140
         self.Armor = 10
         self.Atk = 6
         self.Evade = 1
@@ -124,7 +124,7 @@ class Player(object):
         self.hitch = hitroll
         if self.defending:
             self.Armor += self.Armor
-            self.Evade += 2
+            self.Evade += 1
         if special == False:
             self.full_dmg=dmg - self.Armor
             if self.hitch > self.Evade:
