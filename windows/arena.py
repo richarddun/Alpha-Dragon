@@ -72,7 +72,7 @@ class Enemy_win(object):
 
     def update_e_status(self,index,stat):
         writestring = str(stat[0]) + ':' + str(stat[1])
-        mvwaddstr(self.win,index,self.len_x-len(writestring),' '*len(writestring))
+        mvwaddstr(self.win,index,self.len_x-46,' '*46)
         mvwaddstr(self.win,index,self.len_x-len(writestring),writestring)
         wrefresh(self.win)
 
