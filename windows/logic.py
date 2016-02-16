@@ -1,6 +1,8 @@
 #!/usr/bin/env python2
-"""control flow, instance handling"""
-import unicurses as curses
+"""control flow, instance handling
+    Windows version (unicurses support)"""
+from subprocess import call
+from unicurses import *
 import time
 import random
 import os
@@ -48,28 +50,26 @@ def get_ch_pic(index):
                         return enlist
                     enlist.append(char)
 
-def main(win):
+def main():
     """Main control flow"""
     #put vars in globals to access in functions
     global stdscr,player1,new_enemy,Ewin,Pwin,Swin
-    stdscr = win
-    curses.noecho()
-    curses.cbreak()
-    stdscr.keypad(1)
-    curses.curs_set(0)
+    call(["cmd.exe /c mod con:cols=190 lines=50"],shell=True)
+    stdscr = initscr()
+    noecho()
+    cbreak()
+    keypad(stdscr,True)
+    curs_set(0)
     y,x=0,1
     enemlist = ['Peon','Ogre','Troll','Dragon']
     enemies = {'Peon':Peon,'Ogre':Ogre,'Troll':Troll,'Dragon':Dragon}
     gamecount = 1
     game_is_running = True
-    picref = {'Peon':3,'Troll':17,'Ogre':29,'Dragon':40,'Knight':56,'Title':77,'Prologue':90}
+    picref = {'Peon':3,'Troll':24,'Ogre':45,'Dragon':66,'Knight':87,'Title':108,'Prologue':121}
     #title=68
-    if (stdscr.getmaxyx()[y] < 50) or (stdscr.getmaxyx()[x] < 189):
-        curses.endwin()
-        print "Full screen terminal required to experience the game in SLD (super low definition)"
-        return
-    maxcoords = stdscr.getmaxyx() #(51,150)#(38,90)
-    stdscr.refresh()
+
+    maxcoords = getmaxyx(stdscr) #(51,150)#(38,90)
+    wrefresh(stdscr)
     title = Title_win(maxcoords[y],maxcoords[x])
     title.draw_title(get_ch_pic(picref['Title']))
     #title_display = True
@@ -82,7 +82,7 @@ def main(win):
     Swin = Status_win(maxcoords[y],maxcoords[x])
     player1=Player()
     while player1.isalive and game_is_running:
-        if gamecount % 10 != 0:
+        if gamecount % 15 != 0:
             doom = doomselector()
             if doom == 1:
                 new_enemy = Peon()
@@ -93,7 +93,7 @@ def main(win):
             if doom == 3:
                 new_enemy = Troll()
                 monster = 'Troll'
-        elif gamecount % 10 == 0:
+        elif gamecount % 15 == 0:
             new_enemy = Dragon()
             monster = 'Dragon'
 
@@ -117,21 +117,21 @@ def main(win):
 
         while player1.isalive and new_enemy.isalive:
             took_action = False
-            keypress = stdscr.getch()
+            keypress = getch()
             #player turn
 
             if keypress == ord('Q'):
                 game_is_running = False
                 return
-            elif keypress == curses.KEY_RIGHT:
+            elif keypress == KEY_RIGHT:
                 Swin.actselect(1, False)
-            elif keypress == curses.KEY_LEFT:
+            elif keypress == KEY_LEFT:
                 Swin.actselect(-1, False)
-            elif keypress == curses.KEY_ENTER:
+            elif (keypress == KEY_ENTER) or (keypress == 10) or (keypress == 13):
                 took_action = True
                 player1.defending = False
                 if Swin.actions[Swin.newpos] == 'Attack':
-                    pot_dmg = random.randint(4,player1.Atk*4)
+                    pot_dmg = random.randint(player1.Atk+6,player1.Atk*4)
                     if pot_dmg > player1.maxndmg:
                         real_dmg = player1.maxndmg
                     else:
@@ -141,8 +141,12 @@ def main(win):
                             (real_dmg,False))
                 elif Swin.actions[Swin.newpos] == 'Defend':
                    player1.defending = True
+                   if player1.AP <= 8:
+                       player1.AP += 2
                    Pwin.d_feedback()
+                   #player1.Armor = player1.Armor * 2
                 elif Swin.actions[Swin.newpos] == 'Special':
+                    player1.usedspecial = True
                     pot_dmg = player1.Atk*player1.Atk
                     if pot_dmg > player1.maxsdmg:
                         real_dmg = player1.maxsdmg
@@ -161,20 +165,47 @@ def main(win):
                         Pwin.s_feedback('noap')
                         took_action = False
                 elif Swin.actions[Swin.newpos] == 'Heal':
+                    pot_heal = random.randint(30,50)
                     if player1.Potions > 0:
-                        healed = random.randint(30,50)
-                    else:
+                        if player1.HP >= player1.maxhp:
+                            healed = 999
+                            #already at max HP
+                            took_action = False
+                        elif pot_heal + player1.HP > player1.maxhp:
+                            healed = player1.maxhp - player1.HP
+                            #can't heal past maxhp at cur level
+                        else:
+                            healed = pot_heal
+                    elif player1.Potions <= 0:
+
+
                         healed = 0
                         took_action = False
+                    else:
+                        healed = pot_heal
                     Pwin.h_feedback(player1.heal(healed))
             draw_pstats()
             draw_estats()
-            
+            #enemy turn
+
             if took_action:
                 if new_enemy.isalive:
-                    time.sleep(.3)
-                    enemyattack = random.randint((new_enemy.Atk/2)*new_enemy.Atk,new_enemy.Atk*new_enemy.Atk)
-                    Ewin.ea_feedback(player1.is_attacked(enemyattack,False))
+                    if player1.defending:
+                        if random.randint(1,2) == 1:
+                            en_hitroll = random.randint(0,7) #if defending, en has a chance to fiercely hit
+                            enemyattack = random.randint(new_enemy.Atk*2, new_enemy.Atk*new_enemy.Atk+new_enemy.Atk + player1.Level)
+                            Ewin.ea_feedback(player1.is_attacked(enemyattack,en_hitroll,True))
+                            time.sleep(.4)
+                        else:
+                            en_hitroll = random.randint(0,10)
+
+                            enemyattack = random.randint(new_enemy.Atk,new_enemy.Atk*new_enemy.Atk)
+                            Ewin.ea_feedback(player1.is_attacked(enemyattack,en_hitroll,False))
+
+                    else:
+                        en_hitroll = random.randint(0,10)
+                        enemyattack = random.randint(new_enemy.Atk*2,new_enemy.Atk*new_enemy.Atk)
+                        Ewin.ea_feedback(player1.is_attacked(enemyattack,en_hitroll,False))
                     draw_pstats()
                     time.sleep(.4)
                 if player1.HP <= 0:
@@ -190,26 +221,32 @@ def main(win):
                     death_notice.clear_win()
                     return
                 if player1.defending:
-                    player1.Evade = player1.Evade/2
-                    player1.Armor = player1.Armor/2
+                    player1.Evade = player1.Evade /2
+                    player1.Armor = player1.Armor /2
                     player1.defending = False
                     draw_pstats()
-                if player1.AP <= 8:
-                    player1.AP += 2
+                if not player1.usedspecial:
+                    if player1.AP <= 8:
+                        player1.AP += 2
+
+
                     draw_pstats()
+                player1.usedspecial = False
+        
         Ewin.draw_en_sprite(get_ch_pic(picref[monster]),True)#call True to remove ascii
         en_ack_win = Miniwin(7,55,maxcoords[y]/3,(maxcoords[x]/2)-15)
         en_ack_win.message('You have slain ' + new_enemy.Type,' ',2)
+        player1.EXP += new_enemy.EXP
         time.sleep(1)
         gamecount += 1
-        if gamecount > 10:
+        if gamecount > 15:
             final_summary = Miniwin(10,60,maxcoords[y]/3,(maxcoords[x]/2)-15)
             final_summary.message('Congratulations!',' ',2)
             time.sleep(.5)
             final_summary.message('You have defeated the Alpha Dragon.',' ',3)
             time.sleep(1)
             final_summary.message('Your final score :',' ',4)
-            time.sleep(1)
+            time.sleep(.2)
             score = '--> ' + str(player1.EXP)
             final_summary.message(score,' ',6)
             time.sleep(1)
@@ -219,12 +256,20 @@ def main(win):
             return
         if player1.HP % 2 == 0:
             en_ack_win.message('Searching the enemy corpse you find 2 potions',' ',4)
-            player1.Potions += 2
-            time.sleep(2)
+            if player1.Potions <= 6:
+                player1.Potions += 2
+                time.sleep(2)
+            elif player1.Potions >=8:
+                en_ack_win.message('Cannot hold any more potions!',' ',5)
+                time.sleep(2)
         else:
             en_ack_win.message('You find a potion near to the enemy corpse',' ',4)
-            player1.Potions += 1
-            time.sleep(2)
+            if player1.Potions <= 7:
+                player1.Potions += 1
+                time.sleep(2)
+            elif player1.Potions >=8:
+                en_ack_win.message('Cannot hold any more potions!',' ',5)
+                time.sleep(2)
         en_ack_win.clear_win()
         lev_evaluated = False
         levels = 0
@@ -245,39 +290,47 @@ def main(win):
                 player1.Level += 1
                 if player1.HP + 20 > player1.maxlevhp:
                     player1.HP = player1.maxlevhp
-                    summary.message('HP has been maxed out',' ',2)
+                    summary.message('HP has been maxed out   ','reline',2)
                     time.sleep(2)
                 else: 
-                    player1.HP += 20
-                    summary.message('Max HP increased by 20',' ',2)
-                    time.sleep(2)
-                if (player1.Armor + 10) > player1.maxarmor:
-                    summary.message('Armor has been maxed out',' ',4)
+                    player1.maxhp += 20
+
+                    summary.message('Max HP increased by 20   ','reline',2)
+                    time.sleep(1)
+                if (player1.Armor + 1) > player1.maxarmor:
+                    summary.message('Armor has been maxed out','reline',4)
                     player1.Armor = player1.maxarmor
-                    time.sleep(2)
+                    time.sleep(1)
                 else:
-                    player1.Armor += 2
-                    summary.message('Armor increased by 2',' ',4)
-                    time.sleep(2)
+                    player1.Armor += 1
+                    summary.message('Armor increased by 1    ','reline',4)
+                    time.sleep(1)
                 if (player1.Atk + 1) > player1.maxatk:
                     player1.Atk = player1.maxatk
-                    summary.message('Atk has been maxed out',' ',6)
-                    time.sleep(2)
+                    summary.message('Atk has been maxed out ','reline',6)
+                    time.sleep(1)
                 else:
                     player1.Atk += 1
-                    summary.message('Atk increased by 1',' ',6)
-                    time.sleep(2)
-            time.sleep(1)
+                    summary.message('Atk increased by 1  ','reline',6)
+                    time.sleep(1)
+                if (player1.Evade + 1) > player1.maxevade:
+                    player1.Evade = player1.maxevade
+                    summary.message('Evade has been maxed out  ','reline',8)
+                    time.sleep(1)
+                else:
+                    player1.Evade += 1
+                    summary.message('Evade increased by 1     ','reline',8)
+                    time.sleep(1)
+            time.sleep(2)
             summary.clear_win()
 
         draw_pstats()
 
-
     #end of program clean up
-    curses.nocbreak()
+    unicurses.nocbreak()
     stdscr.keypad(0)
-    curses.echo()
-    curses.endwin()
+    unicurses.echo()
+    unicurses.endwin()
 
 if __name__=='__main__':
-    curses.wrapper(main)
+    main()

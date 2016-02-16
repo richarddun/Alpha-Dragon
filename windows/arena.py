@@ -1,13 +1,13 @@
 """Window writing and handling classes - assume a 40/40/20 split (enemy/player/status)"""
 
-import curses
+from unicurses import *
 import time
 
 class Title_win(object):
     def __init__(self,h,w):
         self.starty, self.startx = 0,0
         self.len_y,self.len_x = self.starty, w
-        self.win = curses.newwin(self.len_y,self.len_x,self.starty,self.startx)
+        self.win = newwin(self.len_y,self.len_x,self.starty,self.startx)
 
     def draw_title(self,enlist):
         yindex = 1
@@ -21,21 +21,21 @@ class Title_win(object):
             if char != '"':
                 pxl = ord(char)
                 #self.win.delch(yindex,xloc)
-                self.win.addch(yindex,xloc,pxl)
+                mvwaddch(self.win,yindex,xloc,pxl)
                 xloc += 1
-        self.win.refresh()
+        wrefresh(self.win)
 
     def write_prologue(self,string):
         yindex = 20
         xreturn = (self.len_x /2) -25
         xloc = xreturn
         writing_prologue = True
-        curses.halfdelay(1)
+        halfdelay(1)
         for char in string:
-            brkchar = self.win.getch()
+            brkchar = getch()
             if brkchar == ord('Q'):
-                curses.nocbreak()
-                curses.cbreak()
+                nocbreak()
+                cbreak()
                 return True
                 break
             if char == '"':
@@ -44,38 +44,37 @@ class Title_win(object):
                 xloc = xreturn
             if char != '"':
                 txt = ord(char)
-                self.win.addch(yindex,xloc,txt)
-                self.win.refresh()
+                mvwaddch(self.win,yindex,xloc,txt)
+                wrefresh(self.win)
                 #time.sleep(.1)
                 xloc += 1
         time.sleep(4)
         return True
 
     def rem_title(self):
-        self.win.erase()
-        self.win.refresh()
+        werase(self.win)
+        wrefresh(self.win)
 
 class Enemy_win(object):
     """Initialise a new enemy window with predetermined
         positions"""
     def __init__(self,h,w):
         self.firstrun = True
-        self.starty, self.startx = 0,0 #enemy window on top
-        self.len_y = int(round((h/5) * 2))
-        self.len_x = w
-        self.win = curses.newwin(self.len_y,self.len_x,self.starty,self.startx)
+        self.starty, self.startx = 0,int(round(w/2)) #enemy window on right
+        self.len_y = int(round(h * .7))#70% of total win
+        self.len_x = int(round(w / 2))
+        self.win = newwin(self.len_y,self.len_x,self.starty,self.startx)
         #self.win.border('|','|','-','-','+','+','+','+')
-        self.win.refresh()
+        wrefresh(self.win)
 
     def redraw(self):
-        self.win.refresh()
+        wrefresh(self.win)
 
     def update_e_status(self,index,stat):
         writestring = str(stat[0]) + ':' + str(stat[1])
-        self.win.addstr((index),self.len_x-46,' '*45)
-        self.win.addstr((index),self.len_x-((len(writestring)+1)),writestring)
-        if index == 6 :
-            self.win.refresh()
+        mvwaddstr(self.win,index,self.len_x-len(writestring),' '*len(writestring))
+        mvwaddstr(self.win,index,self.len_x-len(writestring),writestring)
+        wrefresh(self.win)
 
     def ea_feedback(self,result):
         """Write output to player screen when attacking"""
@@ -87,15 +86,17 @@ class Enemy_win(object):
             resultstring = 'Enemy hits you for ' + str(result[0]) + ' damage'
         elif result[1] == 'evade':
             resultstring = 'Enemy strikes but you dodge the blow'
-        self.win.addstr(self.len_y-2,self.len_x -41,' '*40)
-        self.win.refresh()
+        elif result[1] == 'hits':
+            resultstring = 'Enemy crushes your defense! '+str(result[0])+' damage taken!'
+        mvwaddstr(self.win,self.len_y-2,self.len_x -46,' '*45)
+        wrefresh(self.win)
         time.sleep(.1)
-        self.win.addstr(self.len_y-2,self.len_x -(len(resultstring)+1),resultstring)
-        self.win.refresh()
+        mvwaddstr(self.win,self.len_y-2,self.len_x -(len(resultstring)+1),resultstring)
+        wrefresh(self.win)
         
     def draw_en_sprite(self,enlist,destruct=False):
-        yindex = 2
-        xreturn = (self.len_x / 2) - 25
+        yindex = int(round(self.len_y * .3))
+        xreturn = int(round(self.len_x * .1))
         xloc = xreturn
         for char in enlist:
             if char == '"':
@@ -108,36 +109,35 @@ class Enemy_win(object):
                 elif destruct == False:
                     pxl = ord(char)
                 #self.win.delch(yindex,xloc)
-                self.win.addch(yindex,xloc,pxl)
+                mvwaddch(self.win,yindex,xloc,pxl)
                 xloc += 1
-        self.win.refresh()
+        wrefresh(self.win)
 
     def clear_win(self):
-        self.win.erase()
-        self.win.refresh()
+        werase(self.win)
+        wrefresh(self.win)
 
 class Player_win(object):
     """Initialise a new player window with predetermined
         positions"""
     def __init__(self,h,w):
-        self.starty, self.startx = int(round((h/5) * 2)), 0
-        self.len_y = int(round((h/5) * 2))
-        self.len_x = w
-        self.win = curses.newwin(self.len_y,self.len_x,self.starty,self.startx)
+        self.starty, self.startx = 0,0#player win on left
+        self.len_y = int(round(h * .7))
+        self.len_x = int(round(w/2))
+        self.win = newwin(self.len_y,self.len_x,self.starty,self.startx)
         #self.win.border('|','|','-','-','+','+','+','+')
         #win.addstr(1,1,str(win.getmaxyx))
-        self.subsect = 3 #number of subsections in window
-        self.win.refresh()
+        #self.subsect = 3 #number of subsections in window
+        wrefresh(self.win)
 
     def redraw(self):
-        self.win.refresh()
+        wrefresh(self.win)
 
     def update_p_status(self,index,stat):
         self.writestring = str(stat[0]) + ':' + str(stat[1])
-        self.win.addstr(index,1,'          ')
-        self.win.addstr(index,1,self.writestring)
-        if index == 6 :
-            self.win.refresh()
+        mvwaddstr(self.win,index,1,'          ')
+        mvwaddstr(self.win,index,1,self.writestring)
+        wrefresh(self.win)
 
     def a_feedback(self,result):
         """Write output to player screen when attacking"""
@@ -147,19 +147,19 @@ class Player_win(object):
             resultstring = 'Your attack barely dents its armor'
         elif result[1] == 'hit':
             resultstring = 'Your attack hits for ' + str(result[0]) + ' damage'
-        self.win.addstr(self.len_y-2,self.len_x -41,' '*40)
-        self.win.refresh()
+        mvwaddstr(self.win,self.len_y-2,self.len_x -44,' '*43)
+        wrefresh(self.win)
         time.sleep(.1)
-        self.win.addstr(self.len_y-2,self.len_x -(len(resultstring)+1),resultstring)
-        self.win.refresh()
+        mvwaddstr(self.win,self.len_y-2,self.len_x -(len(resultstring)+1),resultstring)
+        wrefresh(self.win)
 
     def d_feedback(self):
         """Write output to player screen while defending"""
         resultstring = 'You defend.  Armor, Evade increase.'
-        self.win.addstr(self.len_y-2,self.len_x -41,' '*40)
-        self.win.addstr(self.len_y-2,self.len_x - (len(resultstring)+1)
+        mvwaddstr(self.win,self.len_y-2,self.len_x -41,' '*40)
+        mvwaddstr(self.win,self.len_y-2,self.len_x - (len(resultstring)+1)
                 ,resultstring)
-        self.win.refresh()
+        wrefresh(self.win)
 
     def s_feedback(self,result):
         """Write output to player screen when attacking"""
@@ -169,35 +169,43 @@ class Player_win(object):
             resultstring = 'Your gore the enemy for ' +str(result[0])+ ' damage'
         elif result == 'noap':
             resultstring = 'No AP to use this attack'
-        self.win.addstr(self.len_y-2,self.len_x -41,' '*40)
-        self.win.refresh()
+        mvwaddstr(self.win,self.len_y-2,self.len_x -44,' '*43)
+        wrefresh(self.win)
         time.sleep(.1)
-        self.win.addstr(self.len_y-2,self.len_x -(len(resultstring)+1)
+        mvwaddstr(self.win,self.len_y-2,self.len_x -(len(resultstring)+1)
                 ,resultstring)
-        self.win.refresh()
+        wrefresh(self.win)
     
     def h_feedback(self,amount):
         """Write output to player screen when healed"""
         if amount == 0:
             resultstring = 'No potions left!'
-            self.win.addstr(self.len_y-2,self.len_x -41,' '*40)
-            self.win.refresh()
+            mvwaddstr(self.win,self.len_y-2,self.len_x -44,' '*43)
+            wrefresh(self.win)
             time.sleep(.1)
-            self.win.addstr(self.len_y-2,
+            mvwaddstr(self.win,self.len_y-2,
                     (self.len_x - len(resultstring))-1 ,resultstring)
-            self.win.refresh()
+            wrefresh(self.win)
+        elif amount == 999:
+            resultstring = 'Already at max health!'
+            mvwaddstr(self.win,self.len_y-2,self.len_x -44,' '*43)
+            wrefresh(self.win)
+            time.sleep(.1)
+            mvwaddstr(self.win,self.len_y-2,
+                    (self.len_x - len(resultstring))-1 ,resultstring)
+            wrefresh(self.win)
         else:
             resultstring = 'Used a potion.  Healed by '+str(amount)
-            self.win.addstr(self.len_y-2,self.len_x -41,' '*40)
-            self.win.refresh()
+            mvwaddstr(self.win,self.len_y-2,self.len_x -41,' '*40)
+            wrefresh(self.win)
             time.sleep(.1)
-            self.win.addstr(self.len_y-2,self.len_x -
+            mvwaddstr(self.win,self.len_y-2,self.len_x -
                 (len(resultstring)+len(str(amount))-1) ,resultstring)
-            self.win.refresh()
+            wrefresh(self.win)
            
     def draw_pl_sprite(self,enlist):
-        yindex = 0
-        xreturn = 20
+        yindex = int(round(self.len_y * .3))
+        xreturn = int(round(self.len_x * .2))
         xloc = xreturn
         for char in enlist:
             if char == '"':
@@ -207,13 +215,13 @@ class Player_win(object):
             if char != '"':
                 pxl = ord(char)
                 #self.win.delch(yindex,xloc)
-                self.win.addch(yindex,xloc,pxl)
+                mvwaddch(self.win,yindex,xloc,pxl)
                 xloc += 1
-        self.win.refresh()
+        wrefresh(self.win)
 
     def clear_win(self):
-        self.win.erase()
-        self.win.refresh()
+        werase(self.win)
+        wrefresh(self.win)
 
 class Status_win(object):
     """Initialise a new status window with predetermined
@@ -228,9 +236,9 @@ class Status_win(object):
         self.len_y = int(round(h/5))
         self.len_x = w
         subsect_len = self.len_x / subsect
-        self.win = curses.newwin(self.len_y,self.len_x,starty,startx)
-        self.win.border('|','|','-','-','+','+','+','+')
-        self.win.addstr(2,2,'Shift and q to quit')    
+        self.win = newwin(self.len_y,self.len_x,starty,startx)
+        wborder(self.win,'|','|','-','-','+','+','+','+')
+        mvwaddstr(self.win,2,2,'Shift and q to quit')    
         for index, value in enumerate(self.actions, 1):
             padding = (subsect_len - len(value))/2
             xstrloc = (subsect_len*index)- padding - len(value) 
@@ -238,19 +246,19 @@ class Status_win(object):
                 ((self.len_y/2)+1,xstrloc + (len(value)/2))})
             self.posref.append(self.textpos[value])
             if padding <= 1:
-                self.win.addstr(self.len_y/2,xstrloc,value[:2])
+                mvwaddstr(self.win,self.len_y/2,xstrloc,value[:2])
             else:
-                self.win.addstr(self.len_y/2,xstrloc,value)
+                mvwaddstr(self.win,self.len_y/2,xstrloc,value)
         
-        self.win.addch(self.posref[0][0],self.posref[0][1], ord('^'))
-        self.win.addstr(self.len_y-2,
+        mvwaddch(self.win,self.posref[0][0],self.posref[0][1], ord('^'))
+        mvwaddstr(self.win,self.len_y-2,
             self.len_x -75,'Standard Attack '+
             'with your main weapon. Higher chance of hit '+
             'with less dmg.')
-        self.win.refresh()
+        wrefresh(self.win)
     
     def redraw(self):
-        self.win.refresh()
+        wrefresh(self.win)
 
     def actselect(self,way=0,confirm=False):
         """move the selection icon and handle an enter key press to 
@@ -268,60 +276,60 @@ class Status_win(object):
                 self.newpos += way
             
             if self.newpos == 0:
-                self.win.addstr(infoloc_y,infoloc_x, '                                                                          ')
-                self.win.addstr(infoloc_y,
+                mvwaddstr(self.win,infoloc_y,infoloc_x, '                                                                          ')
+                mvwaddstr(self.win,infoloc_y,
                     infoloc_x,'Standard Attack '+
                     'with your main weapon. Higher chance '+
                     'of hit with less dmg.')
             elif self.newpos == 1:
-                self.win.addstr(infoloc_y,infoloc_x,'                                                                          ')
-                self.win.addstr(infoloc_y,infoloc_x, 
+                mvwaddstr(self.win,infoloc_y,infoloc_x,'                                                                          ')
+                mvwaddstr(self.win,infoloc_y,infoloc_x, 
                         'Increase armor and evade chance '+
                         'for the next enemy attack.')
             elif self.newpos == 2:
-                self.win.addstr(infoloc_y,infoloc_x, '                                                                          ')
-                self.win.addstr(infoloc_y,infoloc_x,
+                mvwaddstr(self.win,infoloc_y,infoloc_x, '                                                                          ')
+                mvwaddstr(self.win,infoloc_y,infoloc_x,
                         'Double damage, ignore armor, '+
                         'lower chance of hit.')
             elif self.newpos == 3:
-                self.win.addstr(infoloc_y,infoloc_x, '                                                                          ')
-                self.win.addstr(infoloc_y,infoloc_x, 
+                mvwaddstr(self.win,infoloc_y,infoloc_x, '                                                                          ')
+                mvwaddstr(self.win,infoloc_y,infoloc_x, 
                         'Use a potion to heal HP.')
             
             self.addy, self.addx = self.posref[self.newpos]
             self.remy, self.remx = self.posref[self.curpos]
-            self.win.addch(self.addy, self.addx, ord('^'))
-            self.win.addch(self.remy, self.remx, ord(' '))
-            self.win.refresh()
+            mvwaddch(self.win,self.addy, self.addx, ord('^'))
+            mvwaddch(self.win,self.remy, self.remx, ord(' '))
+            wrefresh(self.win)
 
 class Miniwin(object):
     """Mini Window for interim updates"""
     def __init__(self,h,w,starty,startx):
         self.leny,self.lenx = h, w
-        self.win = curses.newwin(self.leny,self.lenx,starty,startx)
-        self.win.border('#','#','#','#','*','*','*','*')
-        self.win.refresh()
+        self.win = newwin(self.leny,self.lenx,starty,startx)
+        wborder(self.win,'|','|','-','-','+','+','+','+')
+        wrefresh(self.win)
 
     def message(self,string,control=' ',yindex=1):
         self.msg = string
         self.ystartpoint,self.xstartpoint = yindex,5
         if control == 'remline':
-            self.win.addstr(self.ystartpoint,self.xstartpoint,' '*18)
-            self.win.refresh()
+            mvwaddstr(self.win,self.ystartpoint,self.xstartpoint,' '*18)
+            wrefresh(self.win)
         if control == 'reline':
-            self.win.addstr(self.ystartpoint,self.xstartpoint,' '*18)
-            self.win.addstr(self.ystartpoint,self.xstartpoint,self.msg)
-            self.win.refresh()
+            mvwaddstr(self.win,self.ystartpoint,self.xstartpoint,' '*18)
+            mvwaddstr(self.win,self.ystartpoint,self.xstartpoint,self.msg)
+            wrefresh(self.win)
         elif control == ' ':
             try:
-                self.win.addstr(self.ystartpoint,self.xstartpoint,self.msg)
-                self.win.refresh()
+                mvwaddstr(self.win,self.ystartpoint,self.xstartpoint,self.msg)
+                wrefresh(self.win)
             except:
                 pass
 
     def clear_win(self):
-        self.win.erase()
-        self.win.refresh()
+        werase(self.win)
+        wrefresh(self.win)
 
 
 
