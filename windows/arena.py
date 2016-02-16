@@ -72,8 +72,8 @@ class Enemy_win(object):
 
     def update_e_status(self,index,stat):
         writestring = str(stat[0]) + ':' + str(stat[1])
-        mvwaddstr(self.win,index,self.len_x-46,' '*46)
-        mvwaddstr(self.win,index,self.len_x-len(writestring),writestring)
+        mvwaddstr(self.win,index,self.len_x-47,' '*47)
+        mvwaddstr(self.win,index,self.len_x-len(writestring)-1,writestring)
         wrefresh(self.win)
 
     def ea_feedback(self,result):
@@ -180,7 +180,7 @@ class Player_win(object):
         """Write output to player screen when healed"""
         if amount == 0:
             resultstring = 'No potions left!'
-            mvwaddstr(self.win,self.len_y-2,self.len_x -44,' '*43)
+            mvwaddstr(self.win,self.len_y-2,self.len_x -44,' '*44)
             wrefresh(self.win)
             time.sleep(.1)
             mvwaddstr(self.win,self.len_y-2,
@@ -188,7 +188,7 @@ class Player_win(object):
             wrefresh(self.win)
         elif amount == 999:
             resultstring = 'Already at max health!'
-            mvwaddstr(self.win,self.len_y-2,self.len_x -44,' '*43)
+            mvwaddstr(self.win,self.len_y-2,self.len_x -44,' '*44)
             wrefresh(self.win)
             time.sleep(.1)
             mvwaddstr(self.win,self.len_y-2,
@@ -196,11 +196,11 @@ class Player_win(object):
             wrefresh(self.win)
         else:
             resultstring = 'Used a potion.  Healed by '+str(amount)
-            mvwaddstr(self.win,self.len_y-2,self.len_x -41,' '*40)
+            mvwaddstr(self.win,self.len_y-2,self.len_x -44,' '*44)
             wrefresh(self.win)
             time.sleep(.1)
             mvwaddstr(self.win,self.len_y-2,self.len_x -
-                (len(resultstring)+len(str(amount))-1) ,resultstring)
+                (len(resultstring)+len(str(amount))) ,resultstring)
             wrefresh(self.win)
            
     def draw_pl_sprite(self,enlist):
