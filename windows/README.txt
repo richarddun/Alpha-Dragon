@@ -1,6 +1,6 @@
 #Alpha Dragon (Windows)
 
-To grab the exe installer, visit https://www.dropbox.com/s/a29zogmlwwguj72/AlphaDragon.exe?dl=0
+To grab the exe installer, visit https://www.dropbox.com/s/a29zogmlwwguj72/AlphaDragon.exe?dl=1
 
 To run this game, you may either : 
 
