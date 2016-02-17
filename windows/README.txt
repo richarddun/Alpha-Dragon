@@ -4,9 +4,9 @@ To grab the exe installer, visit https://www.dropbox.com/s/a29zogmlwwguj72/Alpha
 
 To run this game, you may either : 
 
-open a CMD window, resize to full screen size, navigate to the application directory (where the files are installed) and then run logic.exe
+Open the shortcut that is created on your desktop after installation, or 
 
-Otherwise you can run the 'start.bat' file which will open a cmd window at the correct dimensions and start the game.
+Open a CMD window, resize to full screen size, navigate to the application directory (where the files are installed) and then run logic.exe
 
 Shift & Q to skip Prologue
 Shift & Q to quit game
